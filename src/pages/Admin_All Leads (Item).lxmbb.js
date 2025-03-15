@@ -211,6 +211,7 @@ $w('#dataset2').onReady((event) => {
                     data: numAllTotalList.slice().reverse(),
                     backgroundColor: "rgba(0, 0, 0, 0.2)",
                     borderColor: "rgba(0, 0, 0, 1)",
+                    borderWidth: 1,
                     type: "line",
                 },
                 {
@@ -246,6 +247,7 @@ $w('#dataset2').onReady((event) => {
                     data: numWebsiteTotalList.slice().reverse(),
                     backgroundColor: "rgba(0, 0, 0, 0.2)",
                     borderColor: "rgba(0, 0, 0, 1)",
+                    borderWidth: 1,
                     type: "line",
 
                 },
@@ -304,6 +306,7 @@ $w('#dataset2').onReady((event) => {
                     data: numSocialTotalList.slice().reverse(),
                     backgroundColor: "rgba(0, 0, 0, 0.2)",
                     borderColor: "rgba(0, 0, 0, 1)",
+                    borderWidth: 1,
                     type: "line",
                 },
                 // {

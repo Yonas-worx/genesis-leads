@@ -37,14 +37,24 @@ class MyChart extends HTMLElement {
         if (!window.Chart) {
             loadScript("https://cdn.jsdelivr.net/npm/chart.js", () => {
                 loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels", () => {
-                    if (this.hasAttribute("data-chart")) {
-                        this.renderChart(JSON.parse(this.getAttribute("data-chart")));
-                    }
+                    loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom", () => {
+                        if (this.hasAttribute("data-chart")) {
+                            this.renderChart(JSON.parse(this.getAttribute("data-chart")));
+                        }
+                    });
                 });
             });
         } else {
             if (!window.ChartDataLabels) {
                 loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels", () => {
+                    loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom", () => {
+                        if (this.hasAttribute("data-chart")) {
+                            this.renderChart(JSON.parse(this.getAttribute("data-chart")));
+                        }
+                    });
+                });
+            } else if (!window.ChartZoom) {
+                loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom", () => {
                     if (this.hasAttribute("data-chart")) {
                         this.renderChart(JSON.parse(this.getAttribute("data-chart")));
                     }
@@ -78,6 +88,7 @@ class MyChart extends HTMLElement {
                     }
                 },
                 responsive: true,
+                maintainAspectRatio: false,
                 interaction: {
                     mode: 'index',
                     intersect: false
@@ -103,10 +114,27 @@ class MyChart extends HTMLElement {
                         font: {
                             weight: "bold"
                         }
+                    },
+                    zoom: {
+                        zoom: {
+                            wheel: {
+                                enabled: true,
+                                speed: 0.01,
+                            },
+                            drag: {
+                                enabled: true,
+                                backgroundColor: 'rgba(225,225,225,0.5)',
+                            },
+                            pinch: {
+                                enabled: true,
+                                speed: 0.05,
+                            },
+                            mode: 'x',
+                        }
                     }
-                },
+                }
             },
-            plugins: [window.ChartDataLabels]
+            plugins: [window.ChartDataLabels, window.ChartZoom]
         });
     }
 }

@@ -138,6 +138,12 @@ class MyChart extends HTMLElement {
         });
     }
 
+    updateChart() {
+        if (this.chartInstance) {
+            this.chartInstance.update();
+        }
+    }
+
     zoomChart(factor) {
         if (this.chartInstance) {
             this.chartInstance.zoom(factor);

@@ -13,8 +13,6 @@ let numRequestAQuoteDateDict = {};
 let numBookATestDriveDateDict = {};
 let numOfflineEventDateDict = {};
 let numContactUsDateDict = {};
-// let numInstagramDateDict = {};
-// let numFacebookDateDict = {};
 let numInstaFaceDateDict = {};
 let numLinkedInDateDict = {};
 // -------------------------------------
@@ -48,7 +46,6 @@ $w.onReady(function () {
 function LeadDataTriage(results) {
     // Seperate all leads by date
     results.items.forEach(lead => {
-        // const leadKey = lead["_createdDate"].toLocaleDateString("en-GB", { day: 'numeric', month: 'short' });
         const leadKey = new Date(lead["created"]).toLocaleDateString("en-GB", { day: 'numeric', month: 'short' });
         if (leadKey in leadByDateDict) {
             leadByDateDict[leadKey].push(lead);
@@ -173,193 +170,188 @@ function LeadDataTriage(results) {
         });
     }
 }
+
+function setupChartData(collectionData) {
+    // Sort out lead data by source and by date
+    LeadDataTriage(collectionData)
+
+    let numWebsiteTotalList = [];
+    let numSocialTotalList = [];
+    let numAllTotalList = [];
+    Object.keys(numLeadsByDateDict).forEach(key => {
+        const webTotalForKey = numRequestAQuoteDateDict[key] + numBookATestDriveDateDict[key] + numContactUsDateDict[key] + numOfflineEventDateDict[key];
+        const socialTotalForKey = numInstaFaceDateDict[key] + numLinkedInDateDict[key];
+        const allTotalForKey = webTotalForKey + socialTotalForKey;
+        numWebsiteTotalList.push(webTotalForKey);
+        numSocialTotalList.push(socialTotalForKey);
+        numAllTotalList.push(allTotalForKey);
+    });
+
+    // All Chart setup
+    let allChartData = {
+        labels: Object.keys(numLeadsByDateDict).slice().reverse(),
+        datasets: [{
+                label: "Total",
+                data: numAllTotalList.slice().reverse(),
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                borderColor: "rgba(0, 0, 0, 1)",
+                borderWidth: 1,
+                type: "line",
+            },
+            {
+                label: "Website Leads",
+                data: numWebsiteTotalList.slice().reverse(),
+                backgroundColor: "rgba(255, 0, 0, 0.2)",
+                borderColor: "rgba(255, 0, 0, 1)",
+                borderWidth: 1,
+                type: "bar",
+                datalabels: {
+                    display: false,
+                }
+            },
+            {
+                label: "Social Media Leads",
+                data: numSocialTotalList.slice().reverse(),
+                backgroundColor: "rgba(0, 255, 0, 0.2)",
+                borderColor: "rgba(0, 255, 0, 1)",
+                borderWidth: 1,
+                type: "bar",
+                datalabels: {
+                    display: false,
+                }
+            },
+        ]
+    };
+
+    // Website Chart setup
+    let webChartData = {
+        labels: Object.keys(numLeadsByDateDict).slice().reverse(),
+        datasets: [{
+                label: "Total",
+                data: numWebsiteTotalList.slice().reverse(),
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                borderColor: "rgba(0, 0, 0, 1)",
+                borderWidth: 1,
+                type: "line",
+
+            },
+            {
+                label: "Request a Quote",
+                data: Object.values(numRequestAQuoteDateDict).slice().reverse(),
+                backgroundColor: "rgba(255, 0, 0, 0.2)",
+                borderColor: "rgba(255, 0, 0, 0.6)",
+                borderWidth: 1,
+                type: "bar",
+                datalabels: {
+                    display: false,
+                }
+            },
+            {
+                label: "Book a Test Drive",
+                data: Object.values(numBookATestDriveDateDict).slice().reverse(),
+                backgroundColor: "rgba(0, 255, 0, 0.2)",
+                borderColor: "rgba(0, 255, 0, 0.6)",
+                borderWidth: 1,
+                type: "bar",
+                datalabels: {
+                    display: false,
+                }
+            },
+            {
+                label: "Offline Event",
+                data: Object.values(numOfflineEventDateDict).slice().reverse(),
+                backgroundColor: "rgba(255, 255, 0, 0.2)",
+                borderColor: "rgba(255, 255, 0, 0.6)",
+                borderWidth: 1,
+                type: "bar",
+                datalabels: {
+                    display: false,
+                }
+            },
+            {
+                label: "Contact Us",
+                data: Object.values(numContactUsDateDict).slice().reverse(),
+                backgroundColor: "rgba(0, 0, 255, 0.2)",
+                borderColor: "rgba(0, 0, 255, 0.6)",
+                borderWidth: 1,
+                type: "bar",
+                datalabels: {
+                    display: false,
+                }
+            },
+        ]
+    };
+
+    // Social media Chart setup
+    let SmChartData = {
+        labels: Object.keys(numLeadsByDateDict).slice().reverse(),
+        datasets: [{
+                label: "Total",
+                data: numSocialTotalList.slice().reverse(),
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                borderColor: "rgba(0, 0, 0, 1)",
+                borderWidth: 1,
+                type: "line",
+            },
+            // {
+            //     label: "Facebook",
+            //     data: Object.values(numFacebookDateDict).slice().reverse(),
+            //     backgroundColor: "rgba(255, 0, 0, 0.2)",
+            //     borderColor: "rgba(255, 0, 0, 0.6)",
+            //     borderWidth: 1,
+            //     type: "bar",
+            //     datalabels: {
+            //         display: false,
+            //     }
+            // },
+            // {
+            //     label: "Instagram",
+            //     data: Object.values(numInstagramDateDict).slice().reverse(),
+            //     backgroundColor: "rgba(0, 255, 0, 0.2)",
+            //     borderColor: "rgba(0, 255, 0, 0.6)",
+            //     borderWidth: 1,
+            //     type: "bar",
+            //     datalabels: {
+            //         display: false,
+            //     }
+            // },
+            {
+                label: "Instagram & Facebook",
+                data: Object.values(numInstaFaceDateDict).slice().reverse(),
+                backgroundColor: "rgba(0, 255, 0, 0.2)",
+                borderColor: "rgba(0, 255, 0, 0.6)",
+                borderWidth: 1,
+                type: "bar",
+                datalabels: {
+                    display: false,
+                }
+            },
+            {
+                label: "LinkedIn",
+                data: Object.values(numLinkedInDateDict).slice().reverse(),
+                backgroundColor: "rgba(0, 0, 255, 0.2)",
+                borderColor: "rgba(0, 0, 255, 0.6)",
+                borderWidth: 1,
+                type: "bar",
+                datalabels: {
+                    display: false,
+                }
+            },
+        ]
+    };
+
+
+    $w("#customElement1").setAttribute("data-chart", JSON.stringify(allChartData));
+    $w("#customElement2").setAttribute("data-chart", JSON.stringify(webChartData));
+    $w("#customElement3").setAttribute("data-chart", JSON.stringify(SmChartData));
+    return [allChartData, webChartData, SmChartData];
+}
 // -------------------------------------
 
-$w('#dataset2').onReady((event) => {
-    // Create a filter for only showing items from last week and more.
-    const dataset2 = $w("#dataset2");
-    const lastWeekDate = new Date();
-    lastWeekDate.setDate(lastWeekDate.getDate() - 14);
-    // const lastWeekFilter = wixData.filter().ge("_createdDate", lastWeekDate);
-    const lastWeekFilter = wixData.filter().ge("created", lastWeekDate);
-    dataset2.setFilter(lastWeekFilter);
-
-    // Send filtered data to chart
-    dataset2.getItems(0, dataset2.getTotalCount()).then((results) => {
-
-        // Sort out lead data by source and by date
-        LeadDataTriage(results)
-
-        let numWebsiteTotalList = [];
-        let numSocialTotalList = [];
-        let numAllTotalList = [];
-        Object.keys(numLeadsByDateDict).forEach(key => {
-            const webTotalForKey = numRequestAQuoteDateDict[key] + numBookATestDriveDateDict[key] + numContactUsDateDict[key] + numOfflineEventDateDict[key];
-            // const socialTotalForKey = numInstagramDateDict[key] + numFacebookDateDict[key] + numLinkedInDateDict[key];
-            const socialTotalForKey = numInstaFaceDateDict[key] + numLinkedInDateDict[key];
-            const allTotalForKey = webTotalForKey + socialTotalForKey;
-            numWebsiteTotalList.push(webTotalForKey);
-            numSocialTotalList.push(socialTotalForKey);
-            numAllTotalList.push(allTotalForKey);
-        });
-
-        // All Chart setup
-        let allChartData = {
-            labels: Object.keys(numLeadsByDateDict).slice().reverse(),
-            datasets: [{
-                    label: "Total",
-                    data: numAllTotalList.slice().reverse(),
-                    backgroundColor: "rgba(0, 0, 0, 0.2)",
-                    borderColor: "rgba(0, 0, 0, 1)",
-                    borderWidth: 1,
-                    type: "line",
-                },
-                {
-                    label: "Website Leads",
-                    data: numWebsiteTotalList.slice().reverse(),
-                    backgroundColor: "rgba(255, 0, 0, 0.2)",
-                    borderColor: "rgba(255, 0, 0, 1)",
-                    borderWidth: 1,
-                    type: "bar",
-                    datalabels: {
-                        display: false,
-                    }
-                },
-                {
-                    label: "Social Media Leads",
-                    data: numSocialTotalList.slice().reverse(),
-                    backgroundColor: "rgba(0, 255, 0, 0.2)",
-                    borderColor: "rgba(0, 255, 0, 1)",
-                    borderWidth: 1,
-                    type: "bar",
-                    datalabels: {
-                        display: false,
-                    }
-                },
-            ]
-        };
-
-        // Website Chart setup
-        let webChartData = {
-            labels: Object.keys(numLeadsByDateDict).slice().reverse(),
-            datasets: [{
-                    label: "Total",
-                    data: numWebsiteTotalList.slice().reverse(),
-                    backgroundColor: "rgba(0, 0, 0, 0.2)",
-                    borderColor: "rgba(0, 0, 0, 1)",
-                    borderWidth: 1,
-                    type: "line",
-
-                },
-                {
-                    label: "Request a Quote",
-                    data: Object.values(numRequestAQuoteDateDict).slice().reverse(),
-                    backgroundColor: "rgba(255, 0, 0, 0.2)",
-                    borderColor: "rgba(255, 0, 0, 0.6)",
-                    borderWidth: 1,
-                    type: "bar",
-                    datalabels: {
-                        display: false,
-                    }
-                },
-                {
-                    label: "Book a Test Drive",
-                    data: Object.values(numBookATestDriveDateDict).slice().reverse(),
-                    backgroundColor: "rgba(0, 255, 0, 0.2)",
-                    borderColor: "rgba(0, 255, 0, 0.6)",
-                    borderWidth: 1,
-                    type: "bar",
-                    datalabels: {
-                        display: false,
-                    }
-                },
-                {
-                    label: "Offline Event",
-                    data: Object.values(numOfflineEventDateDict).slice().reverse(),
-                    backgroundColor: "rgba(255, 255, 0, 0.2)",
-                    borderColor: "rgba(255, 255, 0, 0.6)",
-                    borderWidth: 1,
-                    type: "bar",
-                    datalabels: {
-                        display: false,
-                    }
-                },
-                {
-                    label: "Contact Us",
-                    data: Object.values(numContactUsDateDict).slice().reverse(),
-                    backgroundColor: "rgba(0, 0, 255, 0.2)",
-                    borderColor: "rgba(0, 0, 255, 0.6)",
-                    borderWidth: 1,
-                    type: "bar",
-                    datalabels: {
-                        display: false,
-                    }
-                },
-            ]
-        };
-
-        // Social media Chart setup
-        let SmChartData = {
-            labels: Object.keys(numLeadsByDateDict).slice().reverse(),
-            datasets: [{
-                    label: "Total",
-                    data: numSocialTotalList.slice().reverse(),
-                    backgroundColor: "rgba(0, 0, 0, 0.2)",
-                    borderColor: "rgba(0, 0, 0, 1)",
-                    borderWidth: 1,
-                    type: "line",
-                },
-                // {
-                //     label: "Facebook",
-                //     data: Object.values(numFacebookDateDict).slice().reverse(),
-                //     backgroundColor: "rgba(255, 0, 0, 0.2)",
-                //     borderColor: "rgba(255, 0, 0, 0.6)",
-                //     borderWidth: 1,
-                //     type: "bar",
-                //     datalabels: {
-                //         display: false,
-                //     }
-                // },
-                // {
-                //     label: "Instagram",
-                //     data: Object.values(numInstagramDateDict).slice().reverse(),
-                //     backgroundColor: "rgba(0, 255, 0, 0.2)",
-                //     borderColor: "rgba(0, 255, 0, 0.6)",
-                //     borderWidth: 1,
-                //     type: "bar",
-                //     datalabels: {
-                //         display: false,
-                //     }
-                // },
-                {
-                    label: "Instagram & Facebook",
-                    data: Object.values(numInstaFaceDateDict).slice().reverse(),
-                    backgroundColor: "rgba(0, 255, 0, 0.2)",
-                    borderColor: "rgba(0, 255, 0, 0.6)",
-                    borderWidth: 1,
-                    type: "bar",
-                    datalabels: {
-                        display: false,
-                    }
-                },
-                {
-                    label: "LinkedIn",
-                    data: Object.values(numLinkedInDateDict).slice().reverse(),
-                    backgroundColor: "rgba(0, 0, 255, 0.2)",
-                    borderColor: "rgba(0, 0, 255, 0.6)",
-                    borderWidth: 1,
-                    type: "bar",
-                    datalabels: {
-                        display: false,
-                    }
-                },
-            ]
-        };
-
-        // Send data to the custom element
-        $w("#customElement1").setAttribute("data-chart", JSON.stringify(allChartData));
-        $w("#customElement2").setAttribute("data-chart", JSON.stringify(webChartData));
-        $w("#customElement3").setAttribute("data-chart", JSON.stringify(SmChartData));
+$w('#dataset1').onReady((event) => {
+    const dataset1 = $w("#dataset1");
+    dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
+        setupChartData(results);
     });
 })
 
@@ -382,13 +374,11 @@ $w('#button5').onClick(() => {
 });
 
 // ---------------Filtering---------------
-$w("#startDatePicker").onChange((event) => {
-    $w("#endDatePicker").minDate = $w("#startDatePicker").value;
-    $w("#endDatePicker").enable();
-})
-$w('#endDatePicker').onChange((event) => {
-    const start = $w("#startDatePicker").value.toISOString().split("T")[0];
-    let endDate = $w("#endDatePicker").value;
+function setDateFilter() {
+    let startDate = new Date($w("#startDatePicker").value);
+    startDate.setDate(startDate.getDate() + 1);
+    const start = startDate.toISOString().split("T")[0];
+    let endDate = new Date($w("#endDatePicker").value);
     endDate.setDate(endDate.getDate() + 2);
     const end = endDate.toISOString().split("T")[0];
 
@@ -396,8 +386,35 @@ $w('#endDatePicker').onChange((event) => {
     const countryFilter = wixData.filter().eq("country", username);
     const dateFilter = wixData.filter().between("created", start, end);
 
-    $w("#dataset1").setFilter(countryFilter.and(dateFilter));
+    $w("#dataset1").setFilter(countryFilter.and(dateFilter)).then(() => {
+        $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
+            // Reset dictionaries
+            leadByDateDict = {};
+            numLeadsByDateDict = {};
+            numRequestAQuoteDateDict = {};
+            numBookATestDriveDateDict = {};
+            numOfflineEventDateDict = {};
+            numContactUsDateDict = {};
+            numInstaFaceDateDict = {};
+            numLinkedInDateDict = {};
+
+            setupChartData(results);
+        });
+    });
+}
+$w("#startDatePicker").onChange((event) => {
+    if($w("#endDatePicker").enabled) {
+        setDateFilter();
+    } else {
+        $w("#endDatePicker").minDate = $w("#startDatePicker").value;
+        $w("#endDatePicker").enable();
+    }
 })
+$w('#endDatePicker').onChange((event) => {
+    setDateFilter();
+});
+
+// Sort by
 $w('#dropdown4').onChange((event) => {
     const selection = $w("#dropdown4").value
     if (selection === "Descending") {

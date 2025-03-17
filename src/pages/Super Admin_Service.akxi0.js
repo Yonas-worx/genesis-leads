@@ -148,8 +148,8 @@ $w("#startDatePicker").onChange((event) => {
 $w('#endDatePicker').onChange((event) => {
     setDateFilter();
 });
-$w('#dropdown3').onChange((event) => {
-    const selection = $w("#dropdown3").value
+$w('#dropdown4').onChange((event) => {
+    const selection = $w("#dropdown4").value
     if (selection === "Descending") {
         $w("#dataset1").setSort(wixData.sort().descending("created"))
     } else {

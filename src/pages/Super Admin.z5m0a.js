@@ -354,6 +354,20 @@ $w('#dataset1').onReady((event) => {
     dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
         setupChartData(results);
     });
+    
+    // Filter by Country
+    const datasetTotal = $w("#dataset1").getTotalCount();
+    $w('#dropdown5').onChange(async (event) => {
+        try{
+            const res = await $w("#dataset1").getItems(0, datasetTotal);
+            const uniqueShowrooms = [...new Set(res.items.map(item => item.showroom))];
+            $w("#dropdown2").options = uniqueShowrooms.map(showroom => {
+                return {label: showroom, value: showroom}
+            });
+        } catch (err) { 
+            console.error(err); 
+        }
+    })
 })
 
 // Download Data

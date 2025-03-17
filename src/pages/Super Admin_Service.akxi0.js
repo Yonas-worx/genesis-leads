@@ -77,10 +77,23 @@ function setupChartData(collectionData) {
 // -------------------------------------
 
 $w('#dataset1').onReady((event) => {
-    // Create a filter for only showing items from last week and more.
     const dataset1 = $w("#dataset1");
     dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
-       setupChartData(results);
+        setupChartData(results);
+    });
+    
+    // Filter by Country
+    const datasetTotal = $w("#dataset1").getTotalCount();
+    $w('#dropdown3').onChange(async (event) => {
+        try{
+            const res = await $w("#dataset1").getItems(0, datasetTotal);
+            const uniqueServiceCenters = [...new Set(res.items.map(item => item.serviceCenter))];
+            $w("#dropdown2").options = uniqueServiceCenters.map(showroom => {
+                return {label: showroom, value: showroom}
+            });
+        } catch (err) { 
+            console.error(err); 
+        }
     })
 })
 

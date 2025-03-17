@@ -346,13 +346,53 @@ function setupChartData(collectionData) {
     $w("#customElement3").setAttribute("data-chart", JSON.stringify(SmChartData));
     return [allChartData, webChartData, SmChartData];
 }
+
+function setupSummaryTable(results) {
+    const listOfCountries = [...new Set(results.items.map(item => item.country))];
+    let listOfRows = [];
+
+    const summaryTable = $w("#table2");
+    for (let country of listOfCountries) {
+        const totalLeads = results.items.filter(item => item.country === country).length;
+        const totalRequestAQuote = results.items.filter(item => item.country === country && item.source === "Request a Quote").length;
+        const totalBookATestDrive = results.items.filter(item => item.country === country && item.source === "Book a Test Drive").length;
+        const totalOfflineEvent = results.items.filter(item => item.country === country && item.source === "Offline Event").length;
+        const totalContactUs = results.items.filter(item => item.country === country && item.source === "Contact Us").length;
+        const totalInstaFace = results.items.filter(item => item.country === country && item.source === "ig & fb").length;
+        const totalLinkedIn = results.items.filter(item => item.country === country && item.source === "LinkedIn").length;
+    
+        listOfRows.push({
+            "Country": country,
+            "Leads": totalLeads,
+            "Request a Quote": totalRequestAQuote,
+            "Book a Test Drive": totalBookATestDrive,
+            "Offline Event": totalOfflineEvent,
+            "Contact Us": totalContactUs,
+            "Instagram & Facebook": totalInstaFace,
+            "LinkedIn": totalLinkedIn
+        });
+    }
+
+    summaryTable.columns = [
+        { "id": "col1", "dataPath": "Country", "label": "Country", "type": "string" },
+        { "id": "col2", "dataPath": "Leads", "label": "Total Leads", "type": "number" },
+        { "id": "col3", "dataPath": "Request a Quote", "label": "Request a Quote", "type": "number" },
+        { "id": "col4", "dataPath": "Book a Test Drive", "label": "Book a Test Drive", "type": "number" },
+        { "id": "col5", "dataPath": "Offline Event", "label": "Offline Event", "type": "number" },
+        { "id": "col6", "dataPath": "Contact Us", "label": "Contact Us", "type": "number" },
+        { "id": "col7", "dataPath": "Instagram & Facebook", "label": "Instagram & Facebook", "type": "number" },
+        { "id": "col8", "dataPath": "LinkedIn", "label": "LinkedIn", "type": "number" }
+    ];
+    summaryTable.rows = listOfRows;
+}
 // -------------------------------------
 
-
+// Setup Charts + filter connection
 $w('#dataset1').onReady((event) => {
     const dataset1 = $w("#dataset1");
     dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
         setupChartData(results);
+        setupSummaryTable(results);
     });
     
     // Filter by Country

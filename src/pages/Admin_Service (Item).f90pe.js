@@ -103,23 +103,20 @@ $w('#button6').onClick(() => {
 });
 
 // ---------------Filtering---------------
-function setDateFilter() {
-    let startDate = new Date($w("#startDatePicker").value);
-    startDate.setDate(startDate.getDate() + 1);
-    const start = startDate.toISOString().split("T")[0];
-    let endDate = new Date($w("#endDatePicker").value);
-    endDate.setDate(endDate.getDate() + 2);
-    const end = endDate.toISOString().split("T")[0];
-
-    const username = $w("#dynamicDataset").getCurrentItem()["username"]
-    const countryFilter = wixData.filter().eq("country", username);
+function setDateFilter(start, end) {
     const dateFilter = wixData.filter().between("created", start, end);
 
-    $w("#dataset1").setFilter(countryFilter.and(dateFilter)).then(() => {
+    $w("#dataset1").setFilter(dateFilter).then(() => {
         $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
             // Reset dictionaries
-            serviceleadByDateDict = {};
-            numServiceLeadsByDateDict = {};
+            leadByDateDict = {};
+            numLeadsByDateDict = {};
+            numRequestAQuoteDateDict = {};
+            numBookATestDriveDateDict = {};
+            numOfflineEventDateDict = {};
+            numContactUsDateDict = {};
+            numInstaFaceDateDict = {};
+            numLinkedInDateDict = {};
 
             setupChartData(results);
         });
@@ -127,14 +124,53 @@ function setDateFilter() {
 }
 $w("#startDatePicker").onChange((event) => {
     if($w("#endDatePicker").enabled) {
-        setDateFilter();
+        let startDate = new Date($w("#startDatePicker").value);
+        startDate.setDate(startDate.getDate() + 1);
+        const start = startDate.toISOString().split("T")[0];
+        let endDate = new Date($w("#endDatePicker").value);
+        endDate.setDate(endDate.getDate() + 2);
+        const end = endDate.toISOString().split("T")[0];
+        setDateFilter(start, end);
     } else {
         $w("#endDatePicker").minDate = $w("#startDatePicker").value;
         $w("#endDatePicker").enable();
     }
 })
 $w('#endDatePicker').onChange((event) => {
-    setDateFilter();
+    let startDate = new Date($w("#startDatePicker").value);
+    startDate.setDate(startDate.getDate() + 1);
+    const start = startDate.toISOString().split("T")[0];
+    let endDate = new Date($w("#endDatePicker").value);
+    endDate.setDate(endDate.getDate() + 2);
+    const end = endDate.toISOString().split("T")[0];
+    setDateFilter(start, end);
+});
+// Last 1 Week date filter
+$w("#lastWeekBtn").onClick((event) => {
+    event.target.disable();
+    $w("#last2WeekBtn").enable();
+    $w("#lastMonthBtn").enable();
+    let currentDate = new Date();
+    let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000))
+    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+});
+// Last 2 Weeks date filter
+$w("#last2WeekBtn").onClick((event) => {
+    event.target.disable();
+    $w("#lastWeekBtn").enable();
+    $w("#lastMonthBtn").enable();
+    let currentDate = new Date();
+    let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 2))
+    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+});
+// Last 1 Month date filter
+$w("#lastMonthBtn").onClick((event) => {
+    event.target.disable();
+    $w("#lastWeekBtn").enable();
+    $w("#last2WeekBtn").enable();
+    let currentDate = new Date();
+    let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 4))
+    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
 
 // Sory by

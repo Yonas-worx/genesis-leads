@@ -33,7 +33,7 @@ $w.onReady(function () {
             dataTable.columns = reducedColumns;
             tableViewText.text = "SIMPLE VIEW";
         }
-    })
+    });
 });
 // -------------------------------------
 
@@ -74,22 +74,68 @@ function setupChartData(collectionData) {
 
     $w("#customElement10").setAttribute("data-chart", JSON.stringify(serviceChartData));
 }
+function setupSummaryTable(results) {
+    const summaryTable = $w("#table2");
+
+    summaryTable.columns = [{
+        "id": "col1",
+        "dataPath": "Country",
+        "label": "Country",
+        "type": "string"
+    }, {
+        "id": "col2",
+        "dataPath": "Leads",
+        "label": "Leads",
+        "type": "number"
+    }]
+
+    summaryTable.rows = [
+        {"Country": "Middle East", "Leads": results.items.filter(item => item.country === "Middleeast").length},
+        {"Country": "UAE", "Leads": results.items.filter(item => item.country === "UAE").length},
+        {"Country": "Riyadh", "Leads": results.items.filter(item => item.country === "Riyadh").length},
+        {"Country": "Jeddah", "Leads": results.items.filter(item => item.country === "Jeddah").length},
+        {"Country": "Dammam", "Leads": results.items.filter(item => item.country === "Dammam").length},
+        {"Country": "Oman", "Leads": results.items.filter(item => item.country === "Oman").length},
+        {"Country": "Bahrain", "Leads": results.items.filter(item => item.country === "Bahrain").length},
+        {"Country": "Kuwait", "Leads": results.items.filter(item => item.country === "Kuwait").length},
+        {"Country": "Qatar", "Leads": results.items.filter(item => item.country === "Qatar").length},
+        {"Country": "Lebanon", "Leads": results.items.filter(item => item.country === "Lebanon").length},
+        {"Country": "Jordan", "Leads": results.items.filter(item => item.country === "Jordan").length},
+        {"Country": "Mauritius", "Leads": results.items.filter(item => item.country === "Mauritius").length}
+    ];
+}
 // -------------------------------------
 
+// Setup Charts
 $w('#dataset1').onReady((event) => {
     const dataset1 = $w("#dataset1");
     dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
         setupChartData(results);
+        setupSummaryTable(results);
     });
     
     // Filter by Country
     const datasetTotal = $w("#dataset1").getTotalCount();
     $w('#dropdown3').onChange(async (event) => {
         try{
+            // Set Showroom options based on country
             const res = await $w("#dataset1").getItems(0, datasetTotal);
             const uniqueServiceCenters = [...new Set(res.items.map(item => item.serviceCenter))];
             $w("#dropdown2").options = uniqueServiceCenters.map(showroom => {
                 return {label: showroom, value: showroom}
+            });
+
+            // Filter Charts based on Country
+            const selectedCountry = $w("#dropdown3").value;
+            if (selectedCountry === "") {
+                $w("#dataset1").setFilter(wixData.filter());
+            }
+            else {
+                $w("#dataset1").setFilter(wixData.filter().eq("country", selectedCountry));
+            }
+            $w("#dataset1").getItems(0, datasetTotal).then((results) => {
+                setupChartData(results);
+                setupSummaryTable(results);
             });
         } catch (err) { 
             console.error(err); 
@@ -159,6 +205,7 @@ $w("#lastWeekBtn").onClick((event) => {
     event.target.disable();
     $w("#last2WeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#summaryDateTxt").text = "Last Week";
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
@@ -168,6 +215,7 @@ $w("#last2WeekBtn").onClick((event) => {
     event.target.disable();
     $w("#lastWeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#summaryDateTxt").text = "Last 2 Weeks";
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 2))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
@@ -177,8 +225,20 @@ $w("#lastMonthBtn").onClick((event) => {
     event.target.disable();
     $w("#lastWeekBtn").enable();
     $w("#last2WeekBtn").enable();
+    $w("#summaryDateTxt").text = "Last Month";
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 4))
+    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+});
+// All Dates Filtet
+$w("#allDatesBtn").onClick((event) => {
+    event.target.disable();
+    $w("#lastWeekBtn").enable();
+    $w("#last2WeekBtn").enable();
+    $w("#lastMonthBtn").enable();
+    $w("#summaryDateTxt").text = "All Dates";
+    let currentDate = new Date();
+    let lastWeekDate = new Date(Date.parse("2025-01-01T00:00:00Z"));
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
 
@@ -190,6 +250,20 @@ $w('#dropdown4').onChange((event) => {
     } else {
         $w("#dataset1").setSort(wixData.sort().ascending("created"))
     }
+})
+
+// Clear Filters
+$w("#clearFiltersBtn").onClick((event) => {
+    $w("#dropdown1").value = "";
+    $w("#dropdown2").value = "";
+    $w("#dropdown3").value = "";
+    $w("#dropdown4").value = "Descending";
+    $w("#dataset1").setFilter(wixData.filter());
+    $w("#dataset1").setSort(wixData.sort().descending("created"));
+    $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
+        setupChartData(results);
+        setupSummaryTable(results);
+    });
 })
 // ----------------------------------------
 

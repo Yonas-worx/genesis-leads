@@ -38,7 +38,7 @@ $w.onReady(function () {
             dataTable.columns = reducedColumns;
             tableViewText.text = "SIMPLE VIEW";
         }
-    })
+    });
 });
 // -------------------------------------
 
@@ -411,6 +411,7 @@ $w('#dataset1').onReady((event) => {
     const datasetTotal = $w("#dataset1").getTotalCount();
     $w('#dropdown5').onChange(async (event) => {
         try{
+            // Set Showroom options based on country
             const res = await $w("#dataset1").getItems(0, datasetTotal);
             const uniqueShowrooms = [...new Set(res.items.map(item => item.showroom))];
             $w("#dropdown2").options = uniqueShowrooms.map(showroom => {
@@ -490,6 +491,7 @@ $w("#lastWeekBtn").onClick((event) => {
     $w("#last2WeekBtn").enable();
     $w("#lastMonthBtn").enable();
     $w("#allDatesBtn").enable();
+    $w("#summaryDateTxt").text = "Last Week";
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
@@ -500,6 +502,7 @@ $w("#last2WeekBtn").onClick((event) => {
     $w("#lastWeekBtn").enable();
     $w("#lastMonthBtn").enable();
     $w("#allDatesBtn").enable();
+    $w("#summaryDateTxt").text = "Last 2 Weeks";
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 2))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
@@ -510,6 +513,7 @@ $w("#lastMonthBtn").onClick((event) => {
     $w("#lastWeekBtn").enable();
     $w("#last2WeekBtn").enable();
     $w("#allDatesBtn").enable();
+    $w("#summaryDateTxt").text = "Last Month";
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 4))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
@@ -520,6 +524,7 @@ $w("#allDatesBtn").onClick((event) => {
     $w("#lastWeekBtn").enable();
     $w("#last2WeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#summaryDateTxt").text = "All Dates";
     let currentDate = new Date();
     let lastWeekDate = new Date(Date.parse("2025-01-01T00:00:00Z"));
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
@@ -533,6 +538,21 @@ $w('#dropdown4').onChange((event) => {
     } else {
         $w("#dataset1").setSort(wixData.sort().ascending("created"))
     }
+})
+
+// Clear Filters
+$w("#clearFiltersBtn").onClick((event) => {
+    $w("#dropdown1").value = "";
+    $w("#dropdown2").value = "";
+    $w("#dropdown3").value = "";
+    $w("#dropdown4").value = "Descending";
+    $w("#dropdown5").value = "All";
+    $w("#dataset1").setFilter(wixData.filter());
+    $w("#dataset1").setSort(wixData.sort().descending("created"));
+    $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
+        setupChartData(results);
+        setupSummaryTable(results);
+    });
 })
 // ----------------------------------------
 

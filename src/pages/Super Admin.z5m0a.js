@@ -383,7 +383,19 @@ function setupSummaryTable(results) {
         { "id": "col7", "dataPath": "Instagram & Facebook", "label": "Instagram & Facebook", "type": "number" },
         { "id": "col8", "dataPath": "LinkedIn", "label": "LinkedIn", "type": "number" }
     ];
-    summaryTable.rows = listOfRows;
+
+    summaryTable.rows = [{
+        "Country": "All Leads",
+        "Leads": results.items.filter(item => item).length,
+        "Request a Quote": results.items.filter(item => item.source === "Request a Quote").length,
+        "Book a Test Drive": results.items.filter(item => item.source === "Book a Test Drive").length,
+        "Offline Event": results.items.filter(item => item.source === "Offline Event").length,
+        "Contact Us": results.items.filter(item => item.source === "Contact Us").length,
+        "Instagram & Facebook": results.items.filter(item => item.source === "ig & fb").length,
+        "LinkedIn": results.items.filter(item => item.source === "LinkedIn").length
+    }]
+
+    summaryTable.rows = summaryTable.rows.concat(listOfRows);
 }
 // -------------------------------------
 
@@ -477,6 +489,7 @@ $w("#lastWeekBtn").onClick((event) => {
     event.target.disable();
     $w("#last2WeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#allDatesBtn").enable();
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
@@ -486,6 +499,7 @@ $w("#last2WeekBtn").onClick((event) => {
     event.target.disable();
     $w("#lastWeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#allDatesBtn").enable();
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 2))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
@@ -495,8 +509,19 @@ $w("#lastMonthBtn").onClick((event) => {
     event.target.disable();
     $w("#lastWeekBtn").enable();
     $w("#last2WeekBtn").enable();
+    $w("#allDatesBtn").enable();
     let currentDate = new Date();
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 4))
+    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+});
+// All Dates Filtet
+$w("#allDatesBtn").onClick((event) => {
+    event.target.disable();
+    $w("#lastWeekBtn").enable();
+    $w("#last2WeekBtn").enable();
+    $w("#lastMonthBtn").enable();
+    let currentDate = new Date();
+    let lastWeekDate = new Date(Date.parse("2025-01-01T00:00:00Z"));
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
 

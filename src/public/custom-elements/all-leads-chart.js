@@ -100,9 +100,9 @@ class MyChart extends HTMLElement {
                         color: 'black',
                         font: {
                             weight: 'bold',
-                            size: 40
+                            size: 20
                         },
-                        padding: 20
+                        padding: 10,
                     },
                     legend: {
                         position: 'bottom'

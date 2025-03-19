@@ -15,12 +15,15 @@ let numOfflineEventDateDict = {};
 let numContactUsDateDict = {};
 let numInstaFaceDateDict = {};
 let numLinkedInDateDict = {};
+let currentCountry = null;
 // -------------------------------------
 
 // --------------- Main ---------------
 $w.onReady(function () {
+    currentCountry = $w("#dynamicDataset").getCurrentItem().username;
+
     // Authenticate user via cookies
-    verifyCookie($w("#dynamicDataset").getCurrentItem().username, storage.getItem("loginCountry")).then(res => {
+    verifyCookie(currentCountry, storage.getItem("loginCountry")).then(res => {
         if (res.status !== 200) { to("/"); }
     })
 
@@ -376,8 +379,9 @@ $w('#button5').onClick(() => {
 // ---------------Filtering---------------
 function setDateFilter(start, end) {
     const dateFilter = wixData.filter().between("created", start, end);
+    const countryFilter = wixData.filter().eq("country", currentCountry);
 
-    $w("#dataset1").setFilter(dateFilter).then(() => {
+    $w("#dataset1").setFilter(dateFilter.and(countryFilter)).then(() => {
         $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
             // Reset dictionaries
             leadByDateDict = {};
@@ -421,7 +425,9 @@ $w("#lastWeekBtn").onClick((event) => {
     event.target.disable();
     $w("#last2WeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#allDatesBtn").enable();
     let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
@@ -430,7 +436,9 @@ $w("#last2WeekBtn").onClick((event) => {
     event.target.disable();
     $w("#lastWeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#allDatesBtn").enable();
     let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 2))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
@@ -439,8 +447,21 @@ $w("#lastMonthBtn").onClick((event) => {
     event.target.disable();
     $w("#lastWeekBtn").enable();
     $w("#last2WeekBtn").enable();
+    $w("#allDatesBtn").enable();
     let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 4))
+    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+});
+// All Dates Filtet
+$w("#allDatesBtn").onClick((event) => {
+    event.target.disable();
+    $w("#lastWeekBtn").enable();
+    $w("#last2WeekBtn").enable();
+    $w("#lastMonthBtn").enable();
+    let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
+    let lastWeekDate = new Date(Date.parse("2025-01-01T00:00:00Z"));
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
 

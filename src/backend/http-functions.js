@@ -287,6 +287,7 @@ export async function post_sendLead(request) {
                     break;
                 case "صالة عرض شارع الشيخ زايد [دبي]":
                 case "Shaikh Zayed Road Showroom [Dubai]":
+                case "Sheikh Zayed Road Showroom":
                 case "شارع الشيخ زايد":
                     jsonBody["showroom"] = "Sheikh Zayed Road Showroom [Dubai]";
                     break;

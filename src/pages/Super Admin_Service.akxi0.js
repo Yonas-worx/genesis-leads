@@ -1,144 +1,85 @@
-// ---------------Imports---------------
+// ------------------------------------------------ //
+//                      IMPORTS                     //
+// ------------------------------------------------ //
 import { verifyCookie } from "backend/login-verification.web.js";
 import { session as storage } from 'wix-storage';
 import { to } from 'wix-location';
 import wixData from 'wix-data';
 import "chart.js/auto";
-// -------------------------------------
+import { setupServicesChartData, setupServicesSummaryTable, setupTableViewSwitch } from "public/helper-functions.js";
 
-// ---------------Globals---------------
-let serviceleadByDateDict = {};
-let numServiceLeadsByDateDict = {};
-// -------------------------------------
+// ------------------------------------------------- //
+//                USER AUTHENTICATION                //
+// ------------------------------------------------- //
+verifyCookie("Middleeast", storage.getItem("loginCountry")).then(res => {
+    if (res.status !== 200) { to("/"); }
+})
 
-// --------------- Main ---------------
+// ------------------------------------------------ //
+//                      GLOBALS                     //
+// ------------------------------------------------ //
+let summaryTableElement = null;
+let selectedDropdownCountry = null;
+
+// ------------------------------------------------ //
+//                     NAVIGATION                   //
+// ------------------------------------------------ //
+$w('#button4').onClick((event) => { to(`/super-admin`) })
+$w('#button1').onClick((event) => { storage.removeItem("loginCountry"); to("/"); })
+
+// ------------------------------------------------- //
+//                       MAIN                        //
+// ------------------------------------------------- //
 $w.onReady(function () {
-    // Authenticate user via cookies
-    verifyCookie("Middleeast", storage.getItem("loginCountry")).then(res => {
-        if (res.status !== 200) { to("/"); }
-    })
-    
-    const expandedView = $w("#switch1");
-    const tableViewText = $w("#text10");
-    const dataTable = $w("#table1");
+    // Initialize Globals
+    summaryTableElement = $w("#table2");
 
-    // Expanded Columns View
-    const allColumns = dataTable.columns;
-    const reducedColumns = allColumns.slice(0, -5);
-    expandedView.onClick((event) => {
-        if (expandedView.checked) {
-            dataTable.columns = allColumns;
-            tableViewText.text = "EXPANDED VIEW";
-        } else {
-            dataTable.columns = reducedColumns;
-            tableViewText.text = "SIMPLE VIEW";
-        }
-    });
+    // Page Setup
+    setupTableViewSwitch();
 });
-// -------------------------------------
 
-// ------------Helper Functions--------
-function setupChartData(collectionData) {
-    collectionData.items.forEach(lead => {
-        const leadKey = new Date(lead["created"]).toLocaleDateString("en-GB", { day: 'numeric', month: 'short' });
-        if (!(leadKey in serviceleadByDateDict)) {
-            serviceleadByDateDict[leadKey] = []
-            serviceleadByDateDict[leadKey].push(lead);
-        } else {
-            serviceleadByDateDict[leadKey].push(lead);
-        }
-
-        if (leadKey in numServiceLeadsByDateDict) {
-            numServiceLeadsByDateDict[leadKey] += 1;
-        } else {
-            numServiceLeadsByDateDict[leadKey] = 1;
-        }
-
-        // Ensure all keys exist
-        if (!(leadKey in numServiceLeadsByDateDict)) {
-            numServiceLeadsByDateDict[leadKey] = 0
-        }
-    })
-
-    // Chart setup
-    let serviceChartData = {
-        labels: Object.keys(numServiceLeadsByDateDict).slice().reverse(),
-        datasets: [{
-            label: "Book a Service",
-            data: numServiceLeadsByDateDict,
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-            borderColor: "rgba(0, 0, 0, 1)",
-            type: "bar",
-        }]
-    };
-
-    $w("#customElement10").setAttribute("data-chart", JSON.stringify(serviceChartData));
-}
-function setupSummaryTable(results) {
-    const summaryTable = $w("#table2");
-
-    summaryTable.columns = [{
-        "id": "col1",
-        "dataPath": "Country",
-        "label": "Country",
-        "type": "string"
-    }, {
-        "id": "col2",
-        "dataPath": "Leads",
-        "label": "Leads",
-        "type": "number"
-    }]
-
-    summaryTable.rows = [
-        {"Country": "Middle East", "Leads": results.items.filter(item => item.country === "Middleeast").length},
-        {"Country": "UAE", "Leads": results.items.filter(item => item.country === "UAE").length},
-        {"Country": "Riyadh", "Leads": results.items.filter(item => item.country === "Riyadh").length},
-        {"Country": "Jeddah", "Leads": results.items.filter(item => item.country === "Jeddah").length},
-        {"Country": "Dammam", "Leads": results.items.filter(item => item.country === "Dammam").length},
-        {"Country": "Oman", "Leads": results.items.filter(item => item.country === "Oman").length},
-        {"Country": "Bahrain", "Leads": results.items.filter(item => item.country === "Bahrain").length},
-        {"Country": "Kuwait", "Leads": results.items.filter(item => item.country === "Kuwait").length},
-        {"Country": "Qatar", "Leads": results.items.filter(item => item.country === "Qatar").length},
-        {"Country": "Lebanon", "Leads": results.items.filter(item => item.country === "Lebanon").length},
-        {"Country": "Jordan", "Leads": results.items.filter(item => item.country === "Jordan").length},
-        {"Country": "Mauritius", "Leads": results.items.filter(item => item.country === "Mauritius").length}
-    ];
-}
-// -------------------------------------
-
+// ------------------------------------------------- //
+//                  EVENT LISTENERS                  //
+// ------------------------------------------------- //
 // Setup Charts
 $w('#dataset1').onReady((event) => {
     const dataset1 = $w("#dataset1");
     dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
-        setupChartData(results);
-        setupSummaryTable(results);
+        setupServicesChartData(results);
+        setupServicesSummaryTable(summaryTableElement, results);
     });
-    
+
     // Filter by Country
     const datasetTotal = $w("#dataset1").getTotalCount();
-    $w('#dropdown3').onChange(async (event) => {
-        try{
+    $w('#filterCountryDrop').onChange(async (event) => {
+        try {
             // Set Showroom options based on country
             const res = await $w("#dataset1").getItems(0, datasetTotal);
             const uniqueServiceCenters = [...new Set(res.items.map(item => item.serviceCenter))];
-            $w("#dropdown2").options = uniqueServiceCenters.map(showroom => {
-                return {label: showroom, value: showroom}
+            $w("#filterServiceDrop").options = uniqueServiceCenters.map(showroom => {
+                return { label: showroom, value: showroom }
             });
 
             // Filter Charts based on Country
-            const selectedCountry = $w("#dropdown3").value;
-            if (selectedCountry === "") {
-                $w("#dataset1").setFilter(wixData.filter());
+            selectedDropdownCountry = $w("#filterCountryDrop").value;
+            let combinedFilter = null;
+
+            if (selectedDropdownCountry === null || selectedDropdownCountry === "" || selectedDropdownCountry === "All") {
+                combinedFilter = wixData.filter();
+            } else {
+                combinedFilter = wixData.filter().eq("country", selectedDropdownCountry);
             }
-            else {
-                $w("#dataset1").setFilter(wixData.filter().eq("country", selectedCountry));
-            }
-            $w("#dataset1").getItems(0, datasetTotal).then((results) => {
-                setupChartData(results);
-                setupSummaryTable(results);
-            });
-        } catch (err) { 
-            console.error(err); 
+            $w("#dataset1").setFilter(combinedFilter).then(() => {
+                $w("#dataset1").getItems(0, datasetTotal).then((results) => {
+                    serviceleadByDateDict = {};
+                    numServiceLeadsByDateDict = {};
+
+                    setupChartData(results);
+                    // setupServicesSummaryTable(summaryTableElement, results);
+                });
+            })
+        } catch (err) {
+            console.error(err);
         }
     })
 })
@@ -165,20 +106,36 @@ $w('#button6').onClick(() => {
 // ---------------Filtering---------------
 function setDateFilter(start, end) {
     const dateFilter = wixData.filter().between("created", start, end);
+    let combinedFilter = null;
 
-    $w("#dataset1").setFilter(dateFilter).then(() => {
+    if (selectedDropdownCountry === null || selectedDropdownCountry === "" || selectedDropdownCountry === "All") {
+        combinedFilter = dateFilter;
+        console.log("No Country Selected", selectedDropdownCountry, combinedFilter);
+    } else {
+        const countryFilter = wixData.filter().eq("country", selectedDropdownCountry);
+        combinedFilter = dateFilter.and(countryFilter);
+    }
+
+    $w("#dataset1").setFilter(combinedFilter).then(() => {
         $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
             // Reset dictionaries
             serviceleadByDateDict = {};
             numServiceLeadsByDateDict = {};
 
             setupChartData(results);
-            setupSummaryTable(results);
         });
     });
+
+    $w("#dataset1").setFilter(dateFilter).then(() => {
+        $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
+            setupServicesSummaryTable(summaryTableElement, results);
+        });
+    });
+
+
 }
 $w("#startDatePicker").onChange((event) => {
-    if($w("#endDatePicker").enabled) {
+    if ($w("#endDatePicker").enabled) {
         let startDate = new Date($w("#startDatePicker").value);
         startDate.setDate(startDate.getDate() + 1);
         const start = startDate.toISOString().split("T")[0];
@@ -205,8 +162,10 @@ $w("#lastWeekBtn").onClick((event) => {
     event.target.disable();
     $w("#last2WeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#allDatesBtn").enable();
     $w("#summaryDateTxt").text = "Last Week";
     let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
@@ -215,8 +174,10 @@ $w("#last2WeekBtn").onClick((event) => {
     event.target.disable();
     $w("#lastWeekBtn").enable();
     $w("#lastMonthBtn").enable();
+    $w("#allDatesBtn").enable();
     $w("#summaryDateTxt").text = "Last 2 Weeks";
     let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 2))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
@@ -225,8 +186,10 @@ $w("#lastMonthBtn").onClick((event) => {
     event.target.disable();
     $w("#lastWeekBtn").enable();
     $w("#last2WeekBtn").enable();
+    $w("#allDatesBtn").enable();
     $w("#summaryDateTxt").text = "Last Month";
     let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 4))
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
@@ -238,13 +201,14 @@ $w("#allDatesBtn").onClick((event) => {
     $w("#lastMonthBtn").enable();
     $w("#summaryDateTxt").text = "All Dates";
     let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(Date.parse("2025-01-01T00:00:00Z"));
     setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
 });
 
 // Sort By
-$w('#dropdown4').onChange((event) => {
-    const selection = $w("#dropdown4").value
+$w('#sortDateDrop').onChange((event) => {
+    const selection = $w("#sortDateDrop").value
     if (selection === "Descending") {
         $w("#dataset1").setSort(wixData.sort().descending("created"))
     } else {
@@ -254,28 +218,14 @@ $w('#dropdown4').onChange((event) => {
 
 // Clear Filters
 $w("#clearFiltersBtn").onClick((event) => {
-    $w("#dropdown1").value = "";
-    $w("#dropdown2").value = "";
-    $w("#dropdown3").value = "";
-    $w("#dropdown4").value = "Descending";
+    $w("#filterVehicleDrop").value = "";
+    $w("#filterServiceDrop").value = "";
+    $w("#filterCountryDrop").value = "";
+    $w("#sortDateDrop").value = "Descending";
     $w("#dataset1").setFilter(wixData.filter());
     $w("#dataset1").setSort(wixData.sort().descending("created"));
     $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
         setupChartData(results);
-        setupSummaryTable(results);
+        setupServicesSummaryTable(summaryTableElement, results);
     });
 })
-// ----------------------------------------
-
-// ---------------Navigation---------------
-// Sales Leads BUtton
-$w('#button4').onClick((event) => {
-    to(`/super-admin`)
-})
-
-// Log out button 
-$w('#button1').onClick((event) => {
-    storage.removeItem("loginCountry")
-    to("/");
-})
-// ----------------------------------------

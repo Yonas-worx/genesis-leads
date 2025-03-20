@@ -172,6 +172,134 @@ export async function post_sendLead(request) {
             break;
         }
 
+        // Make sure showroom names in arabic are converted to english
+        if(jsonBody["showroom"] !== "" || jsonBody["showroom"] !== undefined || jsonBody["showroom"] !== null){
+            const rawShowroom = jsonBody["showroom"];
+            switch (rawShowroom) {
+                // Bahrain
+                case "البحرين [منطقة المعامير]":
+                case "Bahrain [Ma ameer Area]":
+                    jsonBody["showroom"] = "Bahrain [Ma'ameer Area]";
+                    break;
+                //Dammam 
+                case "الأحساء -  الهفوف - فرع شارع الرياض [السلمانية شمال]":
+                    jsonBody["showroom"] = "Hassa, Al Hofuf - Riyadh Road Branch [Al Salmaniyah North]";
+                    break;
+                case "الخبر [الملك فهد]":
+                    jsonBody["showroom"] = "Al Khobar [King Fahd]";
+                    break;
+                case "الدمام 91 الفرع الرئيسي، الفيصلية [الملك فهد]":
+                    jsonBody["showroom"] = "Dammam 91 Main Branch, Al Faisaliyah [King Fahd]";
+                    break;
+                case "معرض الجبيل [ الملك فيصل]":
+                case "معرض الجبيل [الملك فيصل]":
+                    jsonBody["showroom"] = "Al Jubail Showroom [King Faisal]";
+                    break;
+                // Jeddah
+                case "اوتو مول [المحمدية]":
+                    jsonBody["showroom"] = "Auto Mall [Al Muhammadiyah]";
+                    break;
+                case "شارع المدينة المنورة [المدينة]":
+                    jsonBody["showroom"] = "Medina Road [Al-Madinah]";
+                    break;
+                case "التحلية [الرحاب]":
+                    jsonBody["showroom"] = "Al Tahliya [Rehab]";
+                    break;
+                case "الامل [النعيم]":
+                    jsonBody["showroom"] = "Al Amal [Al Naeem]";
+                    break;
+                case "كيلو 5 [مكة]":
+                    jsonBody["showroom"] = "Kilo 5 [Makkah]";
+                    break;
+                case "شارع الملك عبدالله [شارع الملك عبدالله الفرعي]":
+                    jsonBody["showroom"] = "King Abdullah Road [King Abdullah Branch Rd]";
+                    break;
+                // Jordan
+                case "صالة العرض الرئيسية [عَمَّان‎]":
+                    jsonBody["showroom"] = "Main Showroom [Amman]";
+                    break;
+                // Kuwait
+                case "الكويت [الشويخ الصناعية]":
+                    jsonBody["showroom"] = "Kuwait [Shuwaikh Industrial]";
+                    break;
+                // MiddleEast / Lebanon
+                case "صالة العرض في بيروت [بيروت]":
+                    jsonBody["showroom"] = "Beirut Showroom [Beirut]";
+                    break;
+                // Oman
+                case "صحار [شارع النجاح، غيل الشبول]":
+                    jsonBody["showroom"] = "Sohar [Al Najah Street, Ghail Shubul]";
+                    break;
+                case "الوطية [مسقط]":
+                    jsonBody["showroom"] = "Wattayah [Muscat]";
+                    break;
+                // Qatar
+                case "سكايلاين للسيارات [الدوحة]":
+                    jsonBody["showroom"] = "Skyline Automotive [Doha]";
+                    break;
+                // Riyadh
+                case "بريدة [شارع الملك عبدالعزيزي]":
+                    jsonBody["showroom"] = "Buraydah [King Abdulaziz Rd]";
+                    break;
+                case "مخرج 5 [ شارع الدائري الشمالي]":
+                    jsonBody["showroom"] = "Exit 5 [Northern Ring Rd]";
+                    break;
+                case "المكتب الرئيسي [ مكة]":
+                case "المكتب الرئيسي [مكة]":
+                    jsonBody["showroom"] = "Head Office [Makkah]";
+                    break;
+                case "الشفا [ الخليل بن احمد]":
+                case "الشفا [الخليل بن احمد]":
+                    jsonBody["showroom"] = "Shifa [Al Khalil Ibn Ahmad]";
+                    break;
+                case "البادية [شارع الدائري الغربي]":
+                    jsonBody["showroom"] = "Badiyah [Western Ring Branch Rd]";
+                    break;
+                case "عنيزة ، القاع [السليمانية]":
+                    jsonBody["showroom"] = "Unayzah, Qaah [As Sulimaniyah]";
+                    break;
+                case "حائل [شارع الملك عبدالله]":
+                    jsonBody["showroom"] = "Hail [King Abdullah Rd]";
+                    break;
+                case "الجوف [المحمدية (ف)]":
+                    jsonBody["showroom"] = "Al Jouf [Almuhammadiyah (F)]";
+                    break;
+                // UAE
+                case "صالة العرض بأبوظبي [أبوظبي]":
+                case "ابوظبي":
+                    jsonBody["showroom"] = "Abu Dhabi Showroom [Abu Dhabi]";
+                    break;
+                case "صالة العرض بالعين [العين]":
+                case "العين":
+                    jsonBody["showroom"] = "Al Ain Showroom [Al Ain]";
+                    break;
+                case "صالة عرض ديرة [دبي]":
+                case "ديرة":
+                    jsonBody["showroom"] = "Deira Showroom [Dubai]";
+                    break;
+                case "صالة العرض بالفجيرة [الفجيرة]":
+                case "فجيرة":
+                    jsonBody["showroom"] = "Fujairah Showroom [Fujairah]";
+                    break;
+                case "صالة العرض برأس الخيمة [رأس الخيمة]":
+                case "راس الخيمة":
+                    jsonBody["showroom"] = "Ras Al Khaima Showroom [Ras al Khaimah]";
+                    break;
+                case "صالة عرض شارع الشيخ زايد [دبي]":
+                case "Shaikh Zayed Road Showroom [Dubai]":
+                case "شارع الشيخ زايد":
+                    jsonBody["showroom"] = "Sheikh Zayed Road Showroom [Dubai]";
+                    break;
+                case "صالة العرض بالشارقة [الشارقة]":
+                case "الشارقة":
+                    jsonBody["showroom"] = "Sharjah Showroom [Sharjah]";
+                    break;
+                default:
+                    break;
+            }
+        } 
+
+
         // Make sure to convert weird date time formats
         const dateInput = jsonBody["created"];
         var date;

@@ -1,28 +1,25 @@
 import wixData from 'wix-data';
 
 // ----------------------- Filter the Dataset by Country and/or Date -----------------------
-export async function filterDataset(dataset, country=null, dates=null) {
-    let customFilter = null;
-    let filteredResults = null;
+export async function filterDataset(dataset, country = null, dates = null, showroom = null, vehicle = null, source = null, serviceCenter = null) {
+    let customFilter = wixData.filter();
 
-    if(country === null && dates !== null) {
-        customFilter = wixData.filter().between("created", dates[0], dates[1]);
-    } else if (country !== null && dates === null) {
-        customFilter = wixData.filter().eq("country", country);
-    } else if (country !== null && dates !== null) {
-        customFilter = wixData.filter().eq("country", country).and(wixData.filter().between("created", dates[0], dates[1]));
-    } else {
-        customFilter = wixData.filter();
+    if (country) {
+        customFilter = customFilter.eq("country", country);
+    } if (dates && Array.isArray(dates) && dates.length === 2) {
+        customFilter = customFilter.and(wixData.filter().between("created", dates[0], dates[1]));
+    } if (showroom) {
+        customFilter = customFilter.and(wixData.filter().eq("showroom", showroom));
+    } if (vehicle) {
+        customFilter = customFilter.and(wixData.filter().eq("vehicleName", vehicle));
+    } if (source) {
+        customFilter = customFilter.and(wixData.filter().eq("source", source));
+    } if (serviceCenter) {
+        customFilter = customFilter.and(wixData.filter().eq("serviceCenter", serviceCenter));
     }
 
     await dataset.setFilter(customFilter);
     return await dataset.getItems(0, dataset.getTotalCount());
-    
-    // dataset.setFilter(customFilter).then(() => {
-    //     dataset.getItems(0, dataset.getTotalCount()).then((results) => {
-    //         return results;
-    //     });
-    // });
 }
 
 // ----------------------- Sets up the Leads Table Expanded View -----------------------
@@ -47,7 +44,8 @@ export function setupTableViewSwitch() {
 // ----------------------- Sets up the Summary Table -----------------------
 // Columns are set based on the different sources of leads and which country they are from
 // Rows are set per country representing the number of leads for each lead source
-export function setupSummaryTable(summaryTableElement, results) {
+export function setupSummaryTable(results) {
+    const summaryTableElement = $w("#summaryTable");
     const listOfCountries = [...new Set(results.items.map(item => item.country))];
     let listOfRows = [];
 
@@ -102,7 +100,8 @@ export function setupSummaryTable(summaryTableElement, results) {
 // ----------------------- Sets up the Services Summary Table -----------------------
 // Columns are Country | # Leads
 // Rows are set as Country and the Number of Leads
-export function setupServicesSummaryTable(summaryTableElement, results) {
+export function setupServicesSummaryTable(results) {
+    const summaryTableElement = $w("#summaryTable");
     summaryTableElement.columns = [{
         "id": "col1",
         "dataPath": "Country",
@@ -364,8 +363,11 @@ export function setupChartData(collectionData) {
         ]
     };
 
+    // @ts-ignore
     $w("#allLeadsChart").setAttribute("data-chart", JSON.stringify(allChartData));
+    // @ts-ignore
     $w("#webLeadsChart").setAttribute("data-chart", JSON.stringify(webChartData));
+    // @ts-ignore
     $w("#smLeadsChart").setAttribute("data-chart", JSON.stringify(SmChartData));
     return [allChartData, webChartData, SmChartData];
 }

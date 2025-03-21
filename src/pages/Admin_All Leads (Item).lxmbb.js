@@ -6,7 +6,7 @@ import { session as storage } from "wix-storage";
 import { to } from 'wix-location';
 import wixData from 'wix-data';
 import "chart.js/auto";
-import { setupChartData ,setupTableViewSwitch } from "public/helper-functions.js";
+import { filterDataset, setupChartData ,setupTableViewSwitch } from "public/helper-functions.js";
 
 // ------------------------------------------------- //
 //                USER AUTHENTICATION                //
@@ -19,6 +19,13 @@ verifyCookie($w("#dynamicDataset").getCurrentItem().username, storage.getItem("l
 //                      GLOBALS                     //
 // ------------------------------------------------ //
 let currentCountry = null;
+let filterDatesArr = null;
+let filterCountry = null;
+let filterShowroom = null;
+let filterVehicle = null;
+let filterSource = null;
+let datasetMaxCount = null;
+
 
 // ------------------------------------------------ //
 //                     NAVIGATION                   //
@@ -32,6 +39,7 @@ $w('#button1').onClick((event) => {storage.removeItem("loginCountry"); to("/");}
 $w.onReady(function () {
     // Initialize Globals
     currentCountry = $w("#dynamicDataset").getCurrentItem().username;
+    filterCountry = currentCountry;
 
     // Page Setup
     setupTableViewSwitch();
@@ -42,14 +50,15 @@ $w.onReady(function () {
         dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
             setupChartData(results);
         });
+
+        datasetMaxCount = $w("#dataset1").getTotalCount();
     })
 });
 
 // ------------------------------------------------- //
 //                  EVENT LISTENERS                  //
 // ------------------------------------------------- //
-
-// Download Data
+// CSV Download
 $w('#button5').onClick(() => {
     const dataset1 = $w("#dataset1");
     dataset1.getItems(0, dataset1.getTotalCount())
@@ -67,27 +76,48 @@ $w('#button5').onClick(() => {
         });
 });
 
-// ---------------Filtering---------------
-function setDateFilter(start, end) {
-    const dateFilter = wixData.filter().between("created", start, end);
-    const countryFilter = wixData.filter().eq("country", currentCountry);
+// ------------------------------------------------- //
+//                DATA FIELD FILTERING               //
+// ------------------------------------------------- //
+// Filter by Showroom
+$w("#filterShowroomDrop").onChange((event) => {
+    const selectedDropdownShowroom = event.target.value;
+    if(selectedDropdownShowroom === "All" || selectedDropdownShowroom === "" || selectedDropdownShowroom === null || selectedDropdownShowroom === "RESET_ALL") {
+        filterShowroom  = null;
+    } else {
+        filterShowroom = selectedDropdownShowroom;
+    }
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle).then((filteredRes) => {
+        setupChartData(filteredRes);
+    })
+})
+// Filter by Vehicle
+$w("#filterVehicleDrop").onChange((event) => {
+    const selectedDropdownVehicle = event.target.value;
+    if(selectedDropdownVehicle === "All" || selectedDropdownVehicle === "" || selectedDropdownVehicle === null || selectedDropdownVehicle === "RESET_ALL") {
+        filterVehicle  = null;
+    } else {
+        filterVehicle = selectedDropdownVehicle;
+    }
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+        setupChartData(filteredRes);
+    })
+})
+// Filter by Lead Source
+$w("#filterSourceDrop").onChange((event) => {
+    const selectedDropdownSource = event.target.value;
+    if(selectedDropdownSource === "All" || selectedDropdownSource === "" || selectedDropdownSource === null || selectedDropdownSource === "RESET_ALL") {
+        filterSource  = null;
+    } else {
+        filterSource = selectedDropdownSource;
+    }
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+        setupChartData(filteredRes);
+    })
+})
 
-    $w("#dataset1").setFilter(dateFilter.and(countryFilter)).then(() => {
-        $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
-            // Reset dictionaries
-            leadByDateDict = {};
-            numLeadsByDateDict = {};
-            numRequestAQuoteDateDict = {};
-            numBookATestDriveDateDict = {};
-            numOfflineEventDateDict = {};
-            numContactUsDateDict = {};
-            numInstaFaceDateDict = {};
-            numLinkedInDateDict = {};
-
-            setupChartData(results);
-        });
-    });
-}
+// --------------------------- Date Filtering
+// Date Picker [Start]
 $w("#startDatePicker").onChange((event) => {
     if($w("#endDatePicker").enabled) {
         let startDate = new Date($w("#startDatePicker").value);
@@ -96,12 +126,22 @@ $w("#startDatePicker").onChange((event) => {
         let endDate = new Date($w("#endDatePicker").value);
         endDate.setDate(endDate.getDate() + 2);
         const end = endDate.toISOString().split("T")[0];
-        setDateFilter(start, end);
+        
+        $w("#lastWeekBtn").enable();
+        $w("#last2WeekBtn").enable();
+        $w("#lastMonthBtn").enable();
+        $w("#allDatesBtn").enable();
+
+        filterDatesArr = [start, end];
+        filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+            setupChartData(filteredRes);
+        });
     } else {
         $w("#endDatePicker").minDate = $w("#startDatePicker").value;
         $w("#endDatePicker").enable();
     }
-})
+});
+// Date Picker [End]
 $w('#endDatePicker').onChange((event) => {
     let startDate = new Date($w("#startDatePicker").value);
     startDate.setDate(startDate.getDate() + 1);
@@ -109,52 +149,88 @@ $w('#endDatePicker').onChange((event) => {
     let endDate = new Date($w("#endDatePicker").value);
     endDate.setDate(endDate.getDate() + 2);
     const end = endDate.toISOString().split("T")[0];
-    setDateFilter(start, end);
+    
+    $w("#lastWeekBtn").enable();
+    $w("#last2WeekBtn").enable();
+    $w("#lastMonthBtn").enable();
+    $w("#allDatesBtn").enable();
+
+    filterDatesArr = [start, end];
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+        setupChartData(filteredRes);
+    });
 });
 // Last 1 Week date filter
 $w("#lastWeekBtn").onClick((event) => {
     event.target.disable();
+    $w("#startDatePicker").value = null;
+    $w("#endDatePicker").value = null;
+    $w("#endDatePicker").disable();
     $w("#last2WeekBtn").enable();
     $w("#lastMonthBtn").enable();
     $w("#allDatesBtn").enable();
+    $w("#summaryDateTxt").text = "Last Week";
     let currentDate = new Date();
     currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000))
-    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+    
+    filterDatesArr = [lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]];
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+        setupChartData(filteredRes);
+    });
 });
 // Last 2 Weeks date filter
 $w("#last2WeekBtn").onClick((event) => {
     event.target.disable();
+    $w("#startDatePicker").value = null;
+    $w("#endDatePicker").value = null;
+    $w("#endDatePicker").disable();
     $w("#lastWeekBtn").enable();
     $w("#lastMonthBtn").enable();
     $w("#allDatesBtn").enable();
     let currentDate = new Date();
     currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 2))
-    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+    
+    filterDatesArr = [lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]];
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+        setupChartData(filteredRes);
+    });
 });
 // Last 1 Month date filter
 $w("#lastMonthBtn").onClick((event) => {
     event.target.disable();
+    $w("#startDatePicker").value = null;
+    $w("#endDatePicker").value = null;
+    $w("#endDatePicker").disable();
     $w("#lastWeekBtn").enable();
     $w("#last2WeekBtn").enable();
     $w("#allDatesBtn").enable();
     let currentDate = new Date();
     currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
     let lastWeekDate = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000 * 4))
-    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+    
+    filterDatesArr = [lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]];
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+        setupChartData(filteredRes);
+    });
 });
-// All Dates Filtet
+// All Dates Filter
 $w("#allDatesBtn").onClick((event) => {
     event.target.disable();
+    $w("#startDatePicker").value = null;
+    $w("#endDatePicker").value = null;
+    $w("#endDatePicker").disable();
     $w("#lastWeekBtn").enable();
     $w("#last2WeekBtn").enable();
     $w("#lastMonthBtn").enable();
-    let currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to current date to account for Timezone
-    let lastWeekDate = new Date(Date.parse("2025-01-01T00:00:00Z"));
-    setDateFilter(lastWeekDate.toISOString().split("T")[0], currentDate.toISOString().split("T")[0]);
+    
+    filterDatesArr = null;
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+        setupChartData(filteredRes)
+    });
 });
+
 
 // Sort by
 $w('#sortDateDrop').onChange((event) => {
@@ -165,16 +241,16 @@ $w('#sortDateDrop').onChange((event) => {
         $w("#dataset1").setSort(wixData.sort().ascending("created"))
     }
 })
-
 // Clear Filters
 $w("#clearFiltersBtn").onClick((event) => {
     $w("#filterVehicleDrop").value = "";
     $w("#filterShowroomDrop").value = "";
     $w("#filterSourceDrop").value = "";
     $w("#sortDateDrop").value = "Descending";
-    $w("#dataset1").setFilter(wixData.filter());
     $w("#dataset1").setSort(wixData.sort().descending("created"));
-    $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
-        setupChartData(results);
+    $w("#dataset1").setFilter(wixData.filter()).then(()=>{
+        $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
+            setupChartData(results);
+        });
     });
 })

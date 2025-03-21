@@ -267,6 +267,7 @@ export async function post_sendLead(request) {
                 // UAE
                 case "صالة العرض بأبوظبي [أبوظبي]":
                 case "ابوظبي":
+                case "المصفح":
                     jsonBody["showroom"] = "Abu Dhabi Showroom [Abu Dhabi]";
                     break;
                 case "صالة العرض بالعين [العين]":

@@ -1,7 +1,7 @@
 import wixData from 'wix-data';
 
 // ----------------------- Filter the Dataset by Country and/or Date -----------------------
-export async function filterDataset(dataset, country = null, dates = null, showroom = null, vehicle = null, source = null, serviceCenter = null) {
+export async function filterDataset(dataset, country = null, dates = null, showroom = null, vehicle = null, source = null, serviceCenter = null, campaign = null) {
     let customFilter = wixData.filter();
 
     if (country) {
@@ -16,6 +16,8 @@ export async function filterDataset(dataset, country = null, dates = null, showr
         customFilter = customFilter.and(wixData.filter().eq("source", source));
     } if (serviceCenter) {
         customFilter = customFilter.and(wixData.filter().eq("serviceCenter", serviceCenter));
+    } if (campaign) {
+        customFilter = customFilter.and(wixData.filter().eq("campaign", campaign));
     }
 
     await dataset.setFilter(customFilter);

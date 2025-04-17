@@ -24,6 +24,7 @@ let filterCountry = null;
 let filterShowroom = null;
 let filterVehicle = null;
 let filterSource = null;
+let filterCampaign = null;
 let datasetMaxCount = null;
 
 
@@ -63,10 +64,10 @@ $w('#button5').onClick(() => {
     const dataset1 = $w("#dataset1");
     dataset1.getItems(0, dataset1.getTotalCount())
         .then((results) => {
-            let csvContent = "created,source,country,showroom,fullName,vehicleName,enquiry,sns,email,areaPhoneNumber,contactEmail,purchase,prefDate,prefTime,currentCar\n"; // CSV-Header Names
+            let csvContent = "created,source,campaign,country,showroom,fullName,vehicleName,enquiry,sns,email,areaPhoneNumber,contactEmail,purchase,prefDate,prefTime,currentCar\n"; // CSV-Header Names
 
             results.items.forEach(item => {
-                let row = `"${item.created}","${item.source}","${item.country}","${item.showroom}","${item.fullName}","${item.vehicleName}","${item.enquiry}","${item.sns}","${item.email}","${item.areaPhoneNumber}","${item.contactEmail}","${item.purchase}","${item.prefDate}","${item.prefTime}","${item.currentCar}"\n`;
+                let row = `"${item.created}","${item.source}","${item.campaign}","${item.country}","${item.showroom}","${item.fullName}","${item.vehicleName}","${item.enquiry}","${item.sns}","${item.email}","${item.areaPhoneNumber}","${item.contactEmail}","${item.purchase}","${item.prefDate}","${item.prefTime}","${item.currentCar}"\n`;
                 csvContent += row;
             })
 
@@ -87,7 +88,7 @@ $w("#filterShowroomDrop").onChange((event) => {
     } else {
         filterShowroom = selectedDropdownShowroom;
     }
-    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle).then((filteredRes) => {
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, null, null ,filterCampaign).then((filteredRes) => {
         setupChartData(filteredRes);
     })
 })
@@ -99,7 +100,7 @@ $w("#filterVehicleDrop").onChange((event) => {
     } else {
         filterVehicle = selectedDropdownVehicle;
     }
-    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource, null, filterCampaign).then((filteredRes) => {
         setupChartData(filteredRes);
     })
 })
@@ -111,7 +112,19 @@ $w("#filterSourceDrop").onChange((event) => {
     } else {
         filterSource = selectedDropdownSource;
     }
-    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource).then((filteredRes) => {
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource, null, filterCampaign).then((filteredRes) => {
+        setupChartData(filteredRes);
+    })
+})
+// Filter by Lead Campaign
+$w("#filterCampaignDrop").onChange((event) => {
+    const selectedDropdownCampaign = event.target.value;
+    if(selectedDropdownCampaign === "All" || selectedDropdownCampaign === "" || selectedDropdownCampaign === null || selectedDropdownCampaign === "RESET_ALL") {
+        filterSource  = null;
+    } else {
+        filterSource = selectedDropdownCampaign;
+    }
+    filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource, null, filterCampaign).then((filteredRes) => {
         setupChartData(filteredRes);
     })
 })
@@ -246,6 +259,7 @@ $w("#clearFiltersBtn").onClick((event) => {
     $w("#filterVehicleDrop").value = "";
     $w("#filterShowroomDrop").value = "";
     $w("#filterSourceDrop").value = "";
+    $w("#filterCampaignDrop").value = "";
     $w("#sortDateDrop").value = "Descending";
     $w("#dataset1").setSort(wixData.sort().descending("created"));
     $w("#dataset1").setFilter(wixData.filter()).then(()=>{

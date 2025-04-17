@@ -14,6 +14,7 @@ const leadsSchemaZod = z.object({
     created: z.string(),
     createdTime: z.string().optional(),
     source: z.string(),
+    campaign: z.string().optional(),
     country: z.string(),
     showroom: z.string().optional(),
     fullName: z.string(),
@@ -74,6 +75,7 @@ export async function post_sendLead(request) {
             const splitFormName = jsonBody["country"].split("_");
             jsonBody["country"] = splitFormName[1]
             jsonBody["vehicleName"] = splitFormName[2].replace("-", " ");
+            jsonBody["campaign"] = splitFormName[3].replace("-", " ");
         }
 
         // Make sure country codes are correct
@@ -157,7 +159,6 @@ export async function post_sendLead(request) {
         case "egypt":
         case "eg":
         case "EG":
-            // Missing SM formname 
             jsonBody["country"] = "Egypt"
             break;
         case "Jordan":
@@ -165,8 +166,11 @@ export async function post_sendLead(request) {
         case "jo":
         case "JO":
         case "الأردن":
-            // Missing SM formname 
             jsonBody["country"] = "Jordan"
+            break;
+        case "Lebanon":
+        case "لبنان":
+            jsonBody["country"] = "Lebanon"
             break;
         default:
             break;
@@ -183,6 +187,7 @@ export async function post_sendLead(request) {
                     break;
                 //Dammam 
                 case "الأحساء -  الهفوف - فرع شارع الرياض [السلمانية شمال]":
+                case "الأحساء - الهفوف - فرع شارع الرياض [السلمانية شمال]":
                     jsonBody["showroom"] = "Hassa, Al Hofuf - Riyadh Road Branch [Al Salmaniyah North]";
                     break;
                 case "الخبر [الملك فهد]":
@@ -319,10 +324,14 @@ export async function post_sendLead(request) {
             jsonBody["createdTime"] = timeString
         }
 
+
+
+        // Match Received Lead vs Schema
         const zodBody = leadsSchemaZod.parse(jsonBody);
 
         // Create Item in Database
         options.body = await wixData.insert("AllLeads", zodBody);
+        console.log(options.body);
         return created(options)
     } catch (err) {
         options.body = err;
@@ -382,6 +391,27 @@ export async function post_sendBookService(request) {
     }
 }
 
+
+
+
+
+
+
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
+//------------------------------------- META
 // Meta Webhook for verification of authenticity
 export async function get_metaWebhook(request) {
     let options = {
@@ -459,87 +489,4 @@ function getLeadDetails(leadgenId) {
             if (data.error) throw new Error(data.error.message);
             return data;
         });
-}
-
-
-
-
-
-
-
-
-import { query } from "wix-data";
-import jsonwebtoken from "jsonwebtoken";
-
-const secretKey = '{VVZE?_?vNXoLF|YQ">MojX|>WV!TY';
-
-export async function post_validateLogin (username, password) {
-    try {
-        const { items } = await query("Accounts").eq("username", username).find();
-
-        // Username not recognized
-        if (items.length === 0) {
-            return response({
-                status: 401,
-                body: { success: false, message: "Username not recognized." }
-            })
-        }
-
-        // Correct Username
-        const user = items[0];
-        if (user.password === password) {
-            // Correct Password - Login Success
-            const sessionToken = jsonwebtoken.sign({ userId: user._id, country: username }, secretKey, { expiresIn: '7d' });
-            return response({
-                status: 200,
-                headers: {
-                    "Set-Cookie": `auth_token=${sessionToken}; HttpOnly: Secure; Path=/; SameSite=Strict; Max-Age${60*60*24*7}`,
-                    "Content-Type": "application/json"
-                },
-                body: { success: true, message: "Login Successful", country: username }
-            });
-        } else {
-            // Incorrect Password
-            return response({
-                status: 401,
-                body: { success: false, message: "Incorrect Password" }
-            });
-        }
-
-    } catch (err) {
-        console.error(err);
-        return response({
-            status: 500,
-            body: { success: false, message: 'An error occurred. Please try again.' }
-        });
-    }
-}
-
-
-export async function get_getUserCountry (request) {
-    try {
-        // Get the cookie from the request headers
-        const cookies = request.headers.cookie || '';
-        const authToken = cookies.split('auth_token=')[1]?.split(';')[0];
-
-        if (!authToken) {
-            return response({
-                status: 401,
-                body: { success: false, message: 'No auth token found.' }
-            });
-        }
-
-        // Verify and decode the JWT token
-        const decoded = jsonwebtoken.verify(authToken, secretKey);
-
-        return response({
-            status: 200,
-            body: { success: true, country: decoded["country"] }
-        });
-    } catch (err) {
-        return response({
-            status: 401,
-            body: { success: false, message: 'Invalid or expired token:', err }
-        });
-    }
 }

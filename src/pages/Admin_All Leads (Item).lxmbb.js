@@ -129,9 +129,9 @@ $w("#filterSourceDrop").onChange((event) => {
 $w("#filterCampaignDrop").onChange((event) => {
     const selectedDropdownCampaign = event.target.value;
     if (selectedDropdownCampaign === "All" || selectedDropdownCampaign === "" || selectedDropdownCampaign === null || selectedDropdownCampaign === "RESET_ALL") {
-        filterSource = null;
+        filterCampaign = null;
     } else {
-        filterSource = selectedDropdownCampaign;
+        filterCampaign = selectedDropdownCampaign;
     }
     filterDataset($w("#dataset1"), filterCountry, filterDatesArr, filterShowroom, filterVehicle, filterSource, null, filterCampaign).then((filteredRes) => {
         setupChartData(filteredRes);

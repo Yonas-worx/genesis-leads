@@ -8,12 +8,6 @@ import wixData, { filter } from 'wix-data';
 import "chart.js/auto";
 import { filterDataset, setupChartData, setupSummaryTable, setupTableViewSwitch } from "public/helper-functions.js";
 
-// ------------------------------------------------- //
-//                USER AUTHENTICATION                //
-// ------------------------------------------------- //
-verifyCookie("Middleeast", storage.getItem("loginCountry")).then(res => {
-    if (res.status !== 200) { to("/"); }
-})
 
 // ------------------------------------------------ //
 //                      GLOBALS                     //
@@ -35,23 +29,33 @@ $w('#button1').onClick((event) => { storage.removeItem("loginCountry"); to("/");
 // ------------------------------------------------- //
 //                       MAIN                        //
 // ------------------------------------------------- //
-$w.onReady(function () {
-    // Initialize Globals
-    summaryTableElement = $w("#summaryTable");
+$w.onReady(async function () {
+    const res = await verifyCookie("Middleeast", storage.getItem("loginCountry"))
+    
+    if (res.status !== 200) {
+        to("/");
+    } else {
+        console.log("User Authenticated");
 
-    // Page Setup
-    setupTableViewSwitch();
-
-    // Setup Charts
-    $w('#dataset1').onReady((event) => {
-        const dataset1 = $w("#dataset1");
-        dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
-            setupChartData(results);
-            setupSummaryTable(results);
+        // Initialize Globals
+        summaryTableElement = $w("#summaryTable");
+        
+        // Page Setup
+        setupTableViewSwitch();
+        
+        // Setup Charts
+        $w('#dataset1').onReady((event) => {
+            const dataset1 = $w("#dataset1");
+            dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
+                setupChartData(results);
+                setupSummaryTable(results);
+            });
+            
+            datasetMaxCount = $w("#dataset1").getTotalCount();
         });
-
-        datasetMaxCount = $w("#dataset1").getTotalCount();
-    });
+    
+        $w("#preload-wrap").hide();
+    }
 });
 
 // ------------------------------------------------- //

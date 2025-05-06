@@ -31,30 +31,30 @@ $w('#button1').onClick((event) => { storage.removeItem("loginCountry"); to("/");
 //                       MAIN                        //
 // ------------------------------------------------- //
 $w.onReady(async function () {
-    const res = await verifyCookie("Middleeast", storage.getItem("loginCountry"))
+    // Initialize Globals
+    summaryTableElement = $w("#summaryTable");
     
+    // Page Setup
+    setupTableViewSwitch();
+    
+    // Setup Charts
+    $w('#dataset1').onReady((event) => {
+        const dataset1 = $w("#dataset1");
+        dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
+            setupServicesChartData(results);
+            setupServicesSummaryTable(results);
+        });
+        
+        datasetMaxCount = $w("#dataset1").getTotalCount();
+    })
+
+    // Authenticate User
+    const res = await verifyCookie("Middleeast", storage.getItem("loginCountry"))
     if (res.status !== 200) {
-        to("/"); 
+        to("/");
+        return;
     } else {
         console.log("User Authenticated");
-
-        // Initialize Globals
-        summaryTableElement = $w("#summaryTable");
-        
-        // Page Setup
-        setupTableViewSwitch();
-        
-        // Setup Charts
-        $w('#dataset1').onReady((event) => {
-            const dataset1 = $w("#dataset1");
-            dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
-                setupServicesChartData(results);
-                setupServicesSummaryTable(results);
-            });
-            
-            datasetMaxCount = $w("#dataset1").getTotalCount();
-        })
-    
         $w("#preload-wrap").hide();
     }
 });

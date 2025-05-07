@@ -41,9 +41,9 @@ $w.onReady(function () {
                     errorMsg.text = res.body.message;
                     errorMsg.show();
                     setTimeout(() => { errorMsg.hide() }, 3000)
+                    submitBtn.enable();
                 }
 
-                submitBtn.enable();
 
             }).catch((err) => {
                 console.error(err);

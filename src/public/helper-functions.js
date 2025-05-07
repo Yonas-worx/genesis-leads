@@ -252,32 +252,29 @@ export function setupChartData(collectionData) {
         datasets: [{
             label: "Total",
             data: numAllTotalList.slice().reverse(),
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-            borderColor: "rgba(0, 0, 0, 1)",
-            borderWidth: 1,
+            backgroundColor: "transparent",
+            borderColor: "transparent",
+            borderWidth: 0,
             type: "line",
+            datalabels: {display: false,}
         },
         {
             label: "Website Leads",
             data: numWebsiteTotalList.slice().reverse(),
-            backgroundColor: "rgba(255, 0, 0, 0.2)",
-            borderColor: "rgba(255, 0, 0, 1)",
-            borderWidth: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            borderColor: "rgba(0, 0, 0, 0.4)",
+            borderWidth: 0,
             type: "bar",
-            datalabels: {
-                display: false,
-            }
+            datalabels: {display: false,}
         },
         {
             label: "Social Media Leads",
             data: numSocialTotalList.slice().reverse(),
-            backgroundColor: "rgba(0, 255, 0, 0.2)",
-            borderColor: "rgba(0, 255, 0, 1)",
-            borderWidth: 1,
+            backgroundColor: "rgba(231, 61, 0, 0.6)",
+            borderColor: "rgba(231, 61, 0, 0.6)",
+            borderWidth: 0,
             type: "bar",
-            datalabels: {
-                display: false,
-            }
+            datalabels: {display: false,}
         },
         ]
     };
@@ -288,45 +285,46 @@ export function setupChartData(collectionData) {
         datasets: [{
             label: "Total",
             data: numWebsiteTotalList.slice().reverse(),
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-            borderColor: "rgba(0, 0, 0, 1)",
-            borderWidth: 1,
+            backgroundColor: "transparent",
+            borderColor: "transparent",
+            borderWidth: 0,
             type: "line",
+            datalabels: { display: false, }
 
         },
         {
-            label: "Request a Quote",
+            label: "Quote",
             data: Object.values(numRequestAQuoteDateDict).slice().reverse(),
-            backgroundColor: "rgba(255, 0, 0, 0.2)",
-            borderColor: "rgba(255, 0, 0, 0.6)",
-            borderWidth: 1,
+            backgroundColor: "rgba(231, 61, 0, 0.6)",
+            borderColor: "rgba(231, 61, 0, 0.6)",
+            borderWidth: 0,
             type: "bar",
             datalabels: { display: false, }
         },
         {
-            label: "Book a Test Drive",
+            label: "Test Drive",
             data: Object.values(numBookATestDriveDateDict).slice().reverse(),
-            backgroundColor: "rgba(0, 255, 0, 0.2)",
-            borderColor: "rgba(0, 255, 0, 0.6)",
-            borderWidth: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            borderColor: "rgba(0, 0, 0, 0.4)",
+            borderWidth: 0,
             type: "bar",
             datalabels: { display: false, }
         },
         {
-            label: "Offline Event",
+            label: "Event",
             data: Object.values(numOfflineEventDateDict).slice().reverse(),
-            backgroundColor: "rgba(255, 255, 0, 0.2)",
-            borderColor: "rgba(255, 255, 0, 0.6)",
-            borderWidth: 1,
+            backgroundColor: "rgba(113, 66, 49, 0.9)",
+            borderColor: "rgba(113, 66, 49, 0.9)",
+            borderWidth: 0,
             type: "bar",
             datalabels: { display: false, }
         },
         {
-            label: "Contact Us",
+            label: "Contact",
             data: Object.values(numContactUsDateDict).slice().reverse(),
-            backgroundColor: "rgba(0, 0, 255, 0.2)",
-            borderColor: "rgba(0, 0, 255, 0.6)",
-            borderWidth: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            borderColor: "rgba(0, 0, 0, 0.8)",
+            borderWidth: 0,
             type: "bar",
             datalabels: { display: false, }
         },
@@ -339,26 +337,27 @@ export function setupChartData(collectionData) {
         datasets: [{
             label: "Total",
             data: numSocialTotalList.slice().reverse(),
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-            borderColor: "rgba(0, 0, 0, 1)",
-            borderWidth: 1,
+            backgroundColor: "transparent",
+            borderColor: "transparent",
+            borderWidth: 0,
             type: "line",
+            datalabels: { display: false, }
         },
         {
             label: "Instagram & Facebook",
             data: Object.values(numInstaFaceDateDict).slice().reverse(),
-            backgroundColor: "rgba(0, 255, 0, 0.2)",
-            borderColor: "rgba(0, 255, 0, 0.6)",
-            borderWidth: 1,
+            backgroundColor: "rgba(231, 61, 0, 0.6)",
+            borderColor: "rgba(231, 61, 0, 0.6)",
+            borderWidth: 0,
             type: "bar",
             datalabels: { display: false, }
         },
         {
             label: "LinkedIn",
             data: Object.values(numLinkedInDateDict).slice().reverse(),
-            backgroundColor: "rgba(0, 0, 255, 0.2)",
-            borderColor: "rgba(0, 0, 255, 0.6)",
-            borderWidth: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            borderColor: "rgba(0, 0, 0, 0.4)",
+            borderWidth: 0,
             type: "bar",
             datalabels: { display: false, }
         },

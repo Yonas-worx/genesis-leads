@@ -100,12 +100,18 @@ class MyChart extends HTMLElement {
                         color: 'black',
                         font: {
                             weight: 'bold',
-                            size: 20
+                            size: 15
                         },
                         padding: 10,
                     },
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            color: 'black',
+                            font: {
+                                size: 10
+                            }
+                        }
                     },
                     datalabels: {
                         color: "black",

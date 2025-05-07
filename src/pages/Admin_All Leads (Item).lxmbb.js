@@ -36,32 +36,34 @@ $w('#button1').onClick((event) => { storage.removeItem("loginCountry"); to("/");
 //                       MAIN                        //
 // ------------------------------------------------- //
 $w.onReady(async function () {
+    $w("#dynamicDataset").onReady(async () => {
     // Initialize Globals
-    currentCountry = $w("#dynamicDataset").getCurrentItem().username;
-    filterCountry = currentCountry;
-    
-    // Page Setup
-    setupTableViewSwitch();
-    
-    // Chart Setup
-    $w('#dataset1').onReady((event) => {
-        const dataset1 = $w("#dataset1");
-        dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
-            setupChartData(results);
-        });
+        currentCountry = $w("#dynamicDataset").getCurrentItem().username;
+        filterCountry = currentCountry;
         
-        datasetMaxCount = $w("#dataset1").getTotalCount();
-    })
-
-    // Authenticate User
-    const res = await verifyCookie($w("#dynamicDataset").getCurrentItem().username, storage.getItem("loginCountry"))
-    if (res.status !== 200) {
-        to("/");
-        return;
-    } else {
-        console.log("User Authenticated");
-        $w("#preload-wrap").hide();
-    }
+        // Page Setup
+        setupTableViewSwitch();
+        
+        // Chart Setup
+        $w('#dataset1').onReady((event) => {
+            const dataset1 = $w("#dataset1");
+            dataset1.getItems(0, dataset1.getTotalCount()).then((results) => {
+                setupChartData(results);
+            });
+            
+            datasetMaxCount = $w("#dataset1").getTotalCount();
+        })
+        
+        // Authenticate User
+        const res = await verifyCookie($w("#dynamicDataset").getCurrentItem().username, storage.getItem("loginCountry"))
+        if (res.status !== 200) {
+            to("/");
+            return;
+        } else {
+            console.log("User Authenticated");
+            $w("#preload-wrap").hide();
+        }
+    });
 });
 
 // ------------------------------------------------- //

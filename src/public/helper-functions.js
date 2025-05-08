@@ -41,6 +41,9 @@ export function setupTableViewSwitch() {
             tableViewText.text = "SIMPLE VIEW";
         }
     });
+    dataTable.columns = reducedColumns;
+    tableViewText.text = "SIMPLE VIEW";
+    expandedView.checked = false;
 }
 
 // ----------------------- Sets up the Summary Table -----------------------

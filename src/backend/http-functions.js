@@ -74,7 +74,7 @@ export async function post_sendLead(request) {
         if (jsonBody["source"] == "Social") {
             const splitFormName = jsonBody["country"].split("_");
             jsonBody["country"] = splitFormName[1]
-            jsonBody["vehicleName"] = splitFormName[2].replace("-", " ");
+            jsonBody["vehicleName"] = splitFormName[2].replace("-", " ").replace(/V[0-9]/g, "");
             jsonBody["campaign"] = splitFormName[3].replace("-", " ");
         }
 

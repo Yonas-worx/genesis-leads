@@ -71,7 +71,7 @@ export async function post_sendLead(request) {
 
         // Make sure to convert formName from SM leads into country
         // Form Name Format is Genesis_OMN_GV80_Ramadan_2025_AR
-        if (jsonBody["source"] == "ig & fb") {
+        if (jsonBody["source"] == "Social") {
             const splitFormName = jsonBody["country"].split("_");
             jsonBody["country"] = splitFormName[1]
             jsonBody["vehicleName"] = splitFormName[2].replace("-", " ");

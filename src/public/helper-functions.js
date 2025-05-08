@@ -72,7 +72,7 @@ export function setupSummaryTable(results) {
         "Book a Test Drive": results.items.filter(item => item.source === "Book a Test Drive").length,
         "Offline Event": results.items.filter(item => item.source === "Offline Event").length,
         "Contact Us": results.items.filter(item => item.source === "Contact Us").length,
-        "Instagram & Facebook": results.items.filter(item => item.source === "ig & fb").length,
+        "Instagram & Facebook": results.items.filter(item => item.source === "Social").length,
         "LinkedIn": results.items.filter(item => item.source === "LinkedIn").length
     }]
 
@@ -83,7 +83,7 @@ export function setupSummaryTable(results) {
         const totalBookATestDrive = results.items.filter(item => item.country === country && item.source === "Book a Test Drive").length;
         const totalOfflineEvent = results.items.filter(item => item.country === country && item.source === "Offline Event").length;
         const totalContactUs = results.items.filter(item => item.country === country && item.source === "Contact Us").length;
-        const totalInstaFace = results.items.filter(item => item.country === country && item.source === "ig & fb").length;
+        const totalInstaFace = results.items.filter(item => item.country === country && item.source === "Social").length;
         const totalLinkedIn = results.items.filter(item => item.country === country && item.source === "LinkedIn").length;
 
         listOfRows.push({
@@ -215,7 +215,7 @@ export function setupChartData(collectionData) {
                         numContactUsDateDict[key] = 1;
                     }
                     break;
-                case "ig & fb":
+                case "Social":
                     if (key in numInstaFaceDateDict) {
                         numInstaFaceDateDict[key] += 1;
                     } else {

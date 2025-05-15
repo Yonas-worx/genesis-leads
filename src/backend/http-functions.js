@@ -139,6 +139,7 @@ export async function post_sendLead(request) {
         case "kw":
         case "KW":
         case "KWT":
+        case "الكويت":
             jsonBody["country"] = "Kuwait"
             break;
         case "Bahrain":
@@ -146,6 +147,7 @@ export async function post_sendLead(request) {
         case "BH":
         case "bh":
         case "BAH":
+        case "البحرين":
             jsonBody["country"] = "Bahrain"
             break;
         case "Mauritius":
@@ -159,6 +161,7 @@ export async function post_sendLead(request) {
         case "egypt":
         case "eg":
         case "EG":
+        case "مصر":
             jsonBody["country"] = "Egypt"
             break;
         case "Jordan":
@@ -169,6 +172,8 @@ export async function post_sendLead(request) {
             jsonBody["country"] = "Jordan"
             break;
         case "Lebanon":
+        case "lebanon":
+        case "lb":
         case "لبنان":
             jsonBody["country"] = "Lebanon"
             break;
@@ -224,6 +229,7 @@ export async function post_sendLead(request) {
                     jsonBody["showroom"] = "Main Showroom [Amman]";
                     break;
                 // Kuwait
+                case "الكويت [الشويخ الصناعية]...":
                 case "الكويت [الشويخ الصناعية]":
                     jsonBody["showroom"] = "Kuwait [Shuwaikh Industrial]";
                     break;
@@ -241,6 +247,9 @@ export async function post_sendLead(request) {
                 // Qatar
                 case "سكايلاين للسيارات [الدوحة]":
                     jsonBody["showroom"] = "Skyline Automotive [Doha]";
+                    break;
+                case "سلوى [الدوحة]":
+                    jsonBody["showroom"] = "Salwa [Doha]";
                     break;
                 // Riyadh
                 case "بريدة [شارع الملك عبدالعزيزي]":

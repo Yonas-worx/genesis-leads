@@ -8,6 +8,8 @@ import { ok, response, created, serverError, badRequest } from "wix-http-functio
 import { fetch } from 'wix-fetch';
 import wixData from "wix-data";
 import { z } from "zod";
+import { triggeredEmails } from "wix-crm-backend";
+
 
 // Schema Validation Setup
 const leadsSchemaZod = z.object({
@@ -81,108 +83,108 @@ export async function post_sendLead(request) {
         // Make sure country codes are correct
         const rawCountry = jsonBody["country"];
         switch (rawCountry) {
-        case "middleeast":
-        case "Middleeast":
-        case "MIDDLEEAST":
-        case "ME":
-            jsonBody["country"] = "Middleeast"
-            break;
-        case "ae":
-        case "AE":
-        case "UAE":
-        case "uae":
-        case "الإمارات":
-            jsonBody["country"] = "UAE"
-            break;
-        case "jeddah":
-        case "Jeddah":
-        case "JEDDAH":
-        case "SA-JEDDAH":
-        case "SAU-J":
-        case "جدة":
-            jsonBody["country"] = "Jeddah"
-            break;
-        case "dammam":
-        case "Dammam":
-        case "DAMMAM":
-        case "SA-DAMMAM":
-        case "SAU-D":
-        case "الدمام":
-            jsonBody["country"] = "Dammam"
-            break;
-        case "riyadh":
-        case "Riyadh":
-        case "RIYADH":
-        case "SA-RIYADH":
-        case "SAU-R":
-        case "الرياض":
-            jsonBody["country"] = "Riyadh"
-            break;
-        case "Qatar":
-        case "qatar":
-        case "qa":
-        case "QA":
-        case "QAT":
-        case "قطر":
-            jsonBody["country"] = "Qatar"
-            break;
-        case "Oman":
-        case "oman":
-        case "om":
-        case "OM":
-        case "OMN":
-        case "عُمان":
-            jsonBody["country"] = "Oman"
-            break;
-        case "Kuwait":
-        case "kuwait":
-        case "kw":
-        case "KW":
-        case "KWT":
-        case "الكويت":
-            jsonBody["country"] = "Kuwait"
-            break;
-        case "Bahrain":
-        case "bahrain":
-        case "BH":
-        case "bh":
-        case "BAH":
-        case "البحرين":
-            jsonBody["country"] = "Bahrain"
-            break;
-        case "Mauritius":
-        case "mauritius":
-        case "mu":
-        case "MU":
-            // Missing SM formname 
-            jsonBody["country"] = "Mauritius"
-            break;
-        case "Egypt":
-        case "egypt":
-        case "eg":
-        case "EG":
-        case "مصر":
-            jsonBody["country"] = "Egypt"
-            break;
-        case "Jordan":
-        case "jordan":
-        case "jo":
-        case "JO":
-        case "الأردن":
-            jsonBody["country"] = "Jordan"
-            break;
-        case "Lebanon":
-        case "lebanon":
-        case "lb":
-        case "لبنان":
-            jsonBody["country"] = "Lebanon"
-            break;
-        default:
-            break;
+            case "middleeast":
+            case "Middleeast":
+            case "MIDDLEEAST":
+            case "ME":
+                jsonBody["country"] = "Middleeast"
+                break;
+            case "ae":
+            case "AE":
+            case "UAE":
+            case "uae":
+            case "الإمارات":
+                jsonBody["country"] = "UAE"
+                break;
+            case "jeddah":
+            case "Jeddah":
+            case "JEDDAH":
+            case "SA-JEDDAH":
+            case "SAU-J":
+            case "جدة":
+                jsonBody["country"] = "Jeddah"
+                break;
+            case "dammam":
+            case "Dammam":
+            case "DAMMAM":
+            case "SA-DAMMAM":
+            case "SAU-D":
+            case "الدمام":
+                jsonBody["country"] = "Dammam"
+                break;
+            case "riyadh":
+            case "Riyadh":
+            case "RIYADH":
+            case "SA-RIYADH":
+            case "SAU-R":
+            case "الرياض":
+                jsonBody["country"] = "Riyadh"
+                break;
+            case "Qatar":
+            case "qatar":
+            case "qa":
+            case "QA":
+            case "QAT":
+            case "قطر":
+                jsonBody["country"] = "Qatar"
+                break;
+            case "Oman":
+            case "oman":
+            case "om":
+            case "OM":
+            case "OMN":
+            case "عُمان":
+                jsonBody["country"] = "Oman"
+                break;
+            case "Kuwait":
+            case "kuwait":
+            case "kw":
+            case "KW":
+            case "KWT":
+            case "الكويت":
+                jsonBody["country"] = "Kuwait"
+                break;
+            case "Bahrain":
+            case "bahrain":
+            case "BH":
+            case "bh":
+            case "BAH":
+            case "البحرين":
+                jsonBody["country"] = "Bahrain"
+                break;
+            case "Mauritius":
+            case "mauritius":
+            case "mu":
+            case "MU":
+                // Missing SM formname 
+                jsonBody["country"] = "Mauritius"
+                break;
+            case "Egypt":
+            case "egypt":
+            case "eg":
+            case "EG":
+            case "مصر":
+                jsonBody["country"] = "Egypt"
+                break;
+            case "Jordan":
+            case "jordan":
+            case "jo":
+            case "JO":
+            case "الأردن":
+                jsonBody["country"] = "Jordan"
+                break;
+            case "Lebanon":
+            case "lebanon":
+            case "lb":
+            case "لبنان":
+                jsonBody["country"] = "Lebanon"
+                break;
+            default:
+                break;
         }
 
         // Make sure showroom names in arabic are converted to english
-        if(jsonBody["showroom"] !== "" || jsonBody["showroom"] !== undefined || jsonBody["showroom"] !== null){
+        if (jsonBody["showroom"] !== "" || jsonBody["showroom"] !== undefined || jsonBody["showroom"] !== null) {
             const rawShowroom = jsonBody["showroom"];
             switch (rawShowroom) {
                 // Bahrain
@@ -313,7 +315,7 @@ export async function post_sendLead(request) {
                 default:
                     break;
             }
-        } 
+        }
 
 
         // Make sure to convert weird date time formats
@@ -341,6 +343,27 @@ export async function post_sendLead(request) {
         // Create Item in Database
         options.body = await wixData.insert("AllLeads", zodBody);
         console.log(options.body);
+
+        // Send Email to notify
+        // Saleh Omnia - 4671a558-ea3a-4b6b-b5d7-df740f749221
+        // Fathima Sayana - f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5
+        // Marwan - 744d4e71-893c-4bc6-81c3-2ed14214c6be
+        let Emailvariables = {
+            Fullname: jsonBody["fullName"],
+            Email: jsonBody["email"],
+            Phone: jsonBody["areaPhoneNumber"],
+            Vehicle: jsonBody["vehicleName"],
+            Showroom: jsonBody["showroom"],
+            Campaign: jsonBody["campaign"]
+        }
+        if (jsonBody["source"] === "Social" && jsonBody["country"] === "UAE") {
+            // triggeredEmails.emailContact("UrKPsGW", "4671a558-ea3a-4b6b-b5d7-df740f749221",{variables: Emailvariables})
+            // triggeredEmails.emailContact("UrKPsGW", "f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5",{variables: Emailvariables})
+            triggeredEmails.emailContact("UrKPsGW", "744d4e71-893c-4bc6-81c3-2ed14214c6be", { variables: Emailvariables })
+                .then(() => console.log("Email Sent to Marwan"))
+                .catch(err => console.error("Error sending email:", err));
+        }
+
         return created(options)
     } catch (err) {
         options.body = err;

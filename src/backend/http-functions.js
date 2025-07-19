@@ -354,7 +354,12 @@ export async function post_sendLead(request) {
             Showroom: jsonBody["showroom"],
             Campaign: jsonBody["campaign"]
         }
-        if (jsonBody["source"] === "Social" && jsonBody["country"] === "UAE") {
+        // Debug: Log values to verify condition
+        console.log("source:", jsonBody["source"], "country:", jsonBody["country"]);
+        if (
+            String(jsonBody["source"]).trim().toLowerCase() === "social" &&
+            String(jsonBody["country"]).trim().toUpperCase() === "UAE"
+        ) {
             console.log("sending automation email");
             runTrigger(Emailvariables);
         }

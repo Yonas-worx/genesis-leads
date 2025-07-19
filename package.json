@@ -6,8 +6,6 @@
     "react": "16.14.0"
   },
   "dependencies": {
-    "@wix/automations": "^1.0.211",
-    "@wix/essentials": "^0.1.24",
     "chart.js": "4.4.7",
     "chartjs-plugin-datalabels": "2.2.0",
     "chartjs-plugin-zoom": "^2.2.0",

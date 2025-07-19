@@ -361,8 +361,11 @@ export async function post_sendLead(request) {
             console.log("Started email sending process");
             // triggeredEmails.emailContact("UrKPsGW", "4671a558-ea3a-4b6b-b5d7-df740f749221",{variables: Emailvariables})
             // triggeredEmails.emailContact("UrKPsGW", "f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5",{variables: Emailvariables})
-            triggeredEmails.emailContact("UrKPsGW", "744d4e71-893c-4bc6-81c3-2ed14214c6be", { variables: Emailvariables })
+            triggeredEmails.emailMember("UrKPsGW", "744d4e71-893c-4bc6-81c3-2ed14214c6be", { variables: Emailvariables })
                 .then(() => console.log("Email Sent to Marwan"))
+                .catch(err => console.error("Error sending email:", err));
+            triggeredEmails.emailMember("UrKPsGW", "1e34797c-5aef-48e9-8545-7f20ce97ec5d", { variables: Emailvariables })
+                .then(() => console.log("Email Sent to Marwan personal"))
                 .catch(err => console.error("Error sending email:", err));
         }
 

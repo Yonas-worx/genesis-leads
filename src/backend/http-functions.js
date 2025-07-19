@@ -345,54 +345,44 @@ export async function post_sendLead(request) {
         options.body = await wixData.insert("AllLeads", zodBody);
         console.log(options.body);
 
-        
 
-        let Emailvariables = {
-            Fullname: jsonBody["fullName"],
-            Email: jsonBody["email"],
-            Phone: jsonBody["areaPhoneNumber"],
-            Vehicle: jsonBody["vehicleName"],
-            Showroom: jsonBody["showroom"],
-            Campaign: jsonBody["campaign"]
+        try {
+
+
+            let Emailvariables = {
+                Fullname: jsonBody["fullName"],
+                Email: jsonBody["email"],
+                Phone: jsonBody["areaPhoneNumber"],
+                Vehicle: jsonBody["vehicleName"],
+                Showroom: jsonBody["showroom"],
+                Campaign: jsonBody["campaign"]
+            }
+            // Debug: Log values to verify condition
+            console.log("source:", jsonBody["source"], "country:", jsonBody["country"]);
+            if (
+                String(jsonBody["source"]).trim().toLowerCase() === "social" &&
+                String(jsonBody["country"]).trim().toUpperCase() === "UAE"
+            ) {
+                console.log("sending automation email");
+                runTrigger(Emailvariables);
+            }
+
+            console.log("before verifying for email sending");
+            if (jsonBody["source"] === "Social" && jsonBody["country"] === "UAE") {
+                console.log("Started email sending process");
+                // triggeredEmails.emailContact("UrKPsGW", "4671a558-ea3a-4b6b-b5d7-df740f749221",{variables: Emailvariables})
+                // triggeredEmails.emailContact("UrKPsGW", "f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5",{variables: Emailvariables})
+                triggeredEmails.emailContact("UrKPsGW", "7456d013-de65-4e46-a73e-fbcbfeced4d3", { variables: Emailvariables })
+                    .then(() => console.log("Email Sent to Marwan"))
+                    .catch(err => console.error("Error sending email:", err));
+                triggeredEmails.emailContact("UrKPsGW", "1e34797c-5aef-48e9-8545-7f20ce97ec5d", { variables: Emailvariables })
+                    .then(() => console.log("Email Sent to Marwan personal"))
+                    .catch(err => console.error("Error sending email:", err));
+            }
+
+        } catch (emailError) {
+            console.error("Error sending email:", emailError);
         }
-        // Debug: Log values to verify condition
-        console.log("source:", jsonBody["source"], "country:", jsonBody["country"]);
-        if (
-            String(jsonBody["source"]).trim().toLowerCase() === "social" &&
-            String(jsonBody["country"]).trim().toUpperCase() === "UAE"
-        ) {
-            console.log("sending automation email");
-            runTrigger(Emailvariables);
-        }
-
-
-
-        // // Send Email to notify
-        // // Saleh Omnia - 4671a558-ea3a-4b6b-b5d7-df740f749221
-        // // Fathima Sayana - f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5
-        // // Marwan - 7456d013-de65-4e46-a73e-fbcbfeced4d3
-        // let Emailvariables = {
-        //     Fullname: jsonBody["fullName"],
-        //     Email: jsonBody["email"],
-        //     Phone: jsonBody["areaPhoneNumber"],
-        //     Vehicle: jsonBody["vehicleName"],
-        //     Showroom: jsonBody["showroom"],
-        //     Campaign: jsonBody["campaign"]
-        // }
-        console.log("before verifying for email sending");
-        if (jsonBody["source"] === "Social" && jsonBody["country"] === "UAE") {
-            console.log("Started email sending process");
-            // triggeredEmails.emailContact("UrKPsGW", "4671a558-ea3a-4b6b-b5d7-df740f749221",{variables: Emailvariables})
-            // triggeredEmails.emailContact("UrKPsGW", "f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5",{variables: Emailvariables})
-            triggeredEmails.emailContact("UrKPsGW", "7456d013-de65-4e46-a73e-fbcbfeced4d3", { variables: Emailvariables })
-                .then(() => console.log("Email Sent to Marwan"))
-                .catch(err => console.error("Error sending email:", err));
-            triggeredEmails.emailContact("UrKPsGW", "1e34797c-5aef-48e9-8545-7f20ce97ec5d", { variables: Emailvariables })
-                .then(() => console.log("Email Sent to Marwan personal"))
-                .catch(err => console.error("Error sending email:", err));
-        }
-
-        
 
         return created(options)
     } catch (err) {

@@ -1,3 +1,5 @@
+/* global Chart */
+
 class MyChart extends HTMLElement {
     constructor() {
         super();

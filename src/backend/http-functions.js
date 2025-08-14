@@ -9,6 +9,7 @@ import { fetch } from 'wix-fetch';
 import wixData from "wix-data";
 import { z } from "zod";
 import { triggeredEmails } from 'wix-crm-backend';
+// import { handleLeadCRM } from 'backend/distributorCRM.js';
 
 
 // Schema Validation Setup
@@ -72,12 +73,19 @@ export async function post_sendLead(request) {
         const jsonBody = JSON.parse(reqBody);
 
         // Make sure to convert formName from SM leads into country
-        // Form Name Format is Genesis_OMN_GV80_Ramadan_2025_AR
+        // Form Name Format is Genesis_OMN_GV80_Ramadan_2025_AR [DEPRECATED]
+        // Form Name Format is Genesis_OMN_GV80_Summer_IG/FB_... [for uae]
+
         if (jsonBody["source"] == "Social") {
             const splitFormName = jsonBody["country"].split("_");
             jsonBody["country"] = splitFormName[1]
             jsonBody["vehicleName"] = splitFormName[2].replaceAll("-", " ").replace(/[- ]+[Vv][0-9]+/g, "");
             jsonBody["campaign"] = splitFormName[3].replace("-", " ");
+
+            //check if IG/FB are specified (especially for UAE)
+            if (splitFormName[4] && (splitFormName[4].toLowerCase() === "ig" || splitFormName[4].toLowerCase() === "fb")) {
+                jsonBody["source"] += `${splitFormName[4].toUpperCase()}`;
+            }
         }
 
         // Make sure country codes are correct
@@ -344,6 +352,9 @@ export async function post_sendLead(request) {
         options.body = await wixData.insert("AllLeads", zodBody);
         console.log(options.body);
 
+        // Send to Distributor CRM asynchronously
+        // setTimeout(() => handleLeadCRM(options.body), 0);
+
         try {
             let Emailvariables = {
                 Fullname: jsonBody["fullName"],
@@ -353,13 +364,19 @@ export async function post_sendLead(request) {
                 Showroom: jsonBody["showroom"],
                 Campaign: jsonBody["campaign"]
             }
-            if (jsonBody["source"] === "Social" && jsonBody["country"] === "UAE") {
+            if ((jsonBody["source"] === "Social" || jsonBody["source"] === "IG" || jsonBody["source"] === "FB") && jsonBody["country"] === "UAE") {
                 triggeredEmails.emailContact("UrKPsGW", "4671a558-ea3a-4b6b-b5d7-df740f749221",{variables: Emailvariables})
                     .then(() => console.log("Email Sent to Omnia"))
                     .catch(err => console.error("Error sending email:", err));
                 triggeredEmails.emailContact("UrKPsGW", "f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5",{variables: Emailvariables})
                     .then(() => console.log("Email Sent to Fathima"))
                     .catch(err => console.error("Error sending email:", err));
+                // triggeredEmails.emailContact("UrKPsGW", "52b2fdd3-3c46-4e64-9f78-62873ded4e3a", { variables: Emailvariables })
+                //     .then(() => console.log("Email Sent to Emad Flayyan"))
+                //     .catch(err => console.error("Error sending email:", err));
+                // triggeredEmails.emailContact("UrKPsGW", "25745c39-5d69-4fc0-b5e0-9810241ae160", { variables: Emailvariables })
+                //     .then(() => console.log("Email Sent to Khalil"))
+                //     .catch(err => console.error("Error sending email:", err));
                 triggeredEmails.emailContact("UrKPsGW", "7456d013-de65-4e46-a73e-fbcbfeced4d3", { variables: Emailvariables })
                     .then(() => console.log("Email Sent to Marwan"))
                     .catch(err => console.error("Error sending email:", err));
@@ -420,6 +437,10 @@ export async function post_sendBookService(request) {
 
         // Create Item in Database
         options.body = await wixData.insert("BookaService", zodBody);
+
+        // Send to Distributor CRM asynchronously
+        // setTimeout(() => handleLeadCRM(options.body), 0);
+
         return created(options)
     } catch (err) {
         options.body = err;

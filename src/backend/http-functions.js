@@ -363,7 +363,7 @@ export async function post_sendLead(request) {
                 Email: jsonBody["email"],
                 Phone: jsonBody["areaPhoneNumber"],
                 Vehicle: jsonBody["vehicleName"],
-                Showroom: jsonBody["showroom"],
+                Showroom: typeof jsonBody["showroom"] === "string" ? jsonBody["showroom"] : "",
                 Campaign: typeof jsonBody["campaign"] === "string" ? jsonBody["campaign"] : ""
             }
             if ((jsonBody["source"] === "Social" || jsonBody["source"] === "IG" || jsonBody["source"] === "FB") && jsonBody["country"] === "UAE") {
@@ -386,7 +386,7 @@ export async function post_sendLead(request) {
                 .catch(err => console.error("Error sending email:", err));
 
         } catch (emailError) {
-            console.error("Error sending email:", emailError);
+            console.error("Error sending email:", emailError, jsonBody);
         }
 
         return created(options)

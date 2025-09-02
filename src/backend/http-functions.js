@@ -364,7 +364,7 @@ export async function post_sendLead(request) {
                 Phone: jsonBody["areaPhoneNumber"],
                 Vehicle: jsonBody["vehicleName"],
                 Showroom: jsonBody["showroom"],
-                Campaign: jsonBody["campaign"]
+                Campaign: typeof jsonBody["campaign"] === "string" ? jsonBody["campaign"] : ""
             }
             if ((jsonBody["source"] === "Social" || jsonBody["source"] === "IG" || jsonBody["source"] === "FB") && jsonBody["country"] === "UAE") {
                 triggeredEmails.emailContact("UrKPsGW", "4671a558-ea3a-4b6b-b5d7-df740f749221", { variables: Emailvariables })

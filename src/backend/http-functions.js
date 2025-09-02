@@ -357,6 +357,8 @@ export async function post_sendLead(request) {
 
         try {
             let Emailvariables = {
+                Country: jsonBody["country"],
+                Source: jsonBody["source"],
                 Fullname: jsonBody["fullName"],
                 Email: jsonBody["email"],
                 Phone: jsonBody["areaPhoneNumber"],

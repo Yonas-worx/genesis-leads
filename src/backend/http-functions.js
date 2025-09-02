@@ -365,22 +365,24 @@ export async function post_sendLead(request) {
                 Campaign: jsonBody["campaign"]
             }
             if ((jsonBody["source"] === "Social" || jsonBody["source"] === "IG" || jsonBody["source"] === "FB") && jsonBody["country"] === "UAE") {
-                triggeredEmails.emailContact("UrKPsGW", "4671a558-ea3a-4b6b-b5d7-df740f749221",{variables: Emailvariables})
+                triggeredEmails.emailContact("UrKPsGW", "4671a558-ea3a-4b6b-b5d7-df740f749221", { variables: Emailvariables })
                     .then(() => console.log("Email Sent to Omnia"))
                     .catch(err => console.error("Error sending email:", err));
-                triggeredEmails.emailContact("UrKPsGW", "f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5",{variables: Emailvariables})
+                triggeredEmails.emailContact("UrKPsGW", "f0dd4eb3-3ce8-4faf-8269-4dd728d48bc5", { variables: Emailvariables })
                     .then(() => console.log("Email Sent to Fathima"))
                     .catch(err => console.error("Error sending email:", err));
-                // triggeredEmails.emailContact("UrKPsGW", "52b2fdd3-3c46-4e64-9f78-62873ded4e3a", { variables: Emailvariables })
-                //     .then(() => console.log("Email Sent to Emad Flayyan"))
-                //     .catch(err => console.error("Error sending email:", err));
-                // triggeredEmails.emailContact("UrKPsGW", "25745c39-5d69-4fc0-b5e0-9810241ae160", { variables: Emailvariables })
-                //     .then(() => console.log("Email Sent to Khalil"))
-                //     .catch(err => console.error("Error sending email:", err));
-                triggeredEmails.emailContact("UrKPsGW", "7456d013-de65-4e46-a73e-fbcbfeced4d3", { variables: Emailvariables })
-                    .then(() => console.log("Email Sent to Marwan"))
-                    .catch(err => console.error("Error sending email:", err));
             }
+
+            triggeredEmails.emailContact("UrKPsGW", "52b2fdd3-3c46-4e64-9f78-62873ded4e3a", { variables: Emailvariables })
+                .then(() => console.log("Email Sent to Emad Flayyan"))
+                .catch(err => console.error("Error sending email:", err));
+            triggeredEmails.emailContact("UrKPsGW", "25745c39-5d69-4fc0-b5e0-9810241ae160", { variables: Emailvariables })
+                .then(() => console.log("Email Sent to Khalil"))
+                .catch(err => console.error("Error sending email:", err));
+            triggeredEmails.emailContact("UrKPsGW", "7456d013-de65-4e46-a73e-fbcbfeced4d3", { variables: Emailvariables })
+                .then(() => console.log("Email Sent to Marwan"))
+                .catch(err => console.error("Error sending email:", err));
+
         } catch (emailError) {
             console.error("Error sending email:", emailError);
         }
@@ -388,7 +390,7 @@ export async function post_sendLead(request) {
         return created(options)
     } catch (err) {
         options.body = err;
-        console.log(request, err);
+        console.error("Error in post_sendLead:", err);
         return serverError(options);
     }
 }
@@ -444,6 +446,7 @@ export async function post_sendBookService(request) {
         return created(options)
     } catch (err) {
         options.body = err;
+        console.error("Error in post_sendBookService:", err);
         return serverError(options);
     }
 }

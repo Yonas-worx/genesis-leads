@@ -375,15 +375,17 @@ export async function post_sendLead(request) {
                     .catch(err => console.error("Error sending email:", err));
             }
 
-            triggeredEmails.emailContact("UrKPsGW", "52b2fdd3-3c46-4e64-9f78-62873ded4e3a", { variables: Emailvariables })
-                .then(() => console.log("Email Sent to Emad Flayyan"))
-                .catch(err => console.error("Error sending email:", err));
-            triggeredEmails.emailContact("UrKPsGW", "25745c39-5d69-4fc0-b5e0-9810241ae160", { variables: Emailvariables })
-                .then(() => console.log("Email Sent to Khalil"))
-                .catch(err => console.error("Error sending email:", err));
-            triggeredEmails.emailContact("UrKPsGW", "7456d013-de65-4e46-a73e-fbcbfeced4d3", { variables: Emailvariables })
-                .then(() => console.log("Email Sent to Marwan"))
-                .catch(err => console.error("Error sending email:", err));
+            if ((jsonBody["country"]) === "Middleeast") {
+                triggeredEmails.emailContact("UrKPsGW", "52b2fdd3-3c46-4e64-9f78-62873ded4e3a", { variables: Emailvariables })
+                    .then(() => console.log("Email Sent to Emad Flayyan"))
+                    .catch(err => console.error("Error sending email:", err));
+                triggeredEmails.emailContact("UrKPsGW", "25745c39-5d69-4fc0-b5e0-9810241ae160", { variables: Emailvariables })
+                    .then(() => console.log("Email Sent to Khalil"))
+                    .catch(err => console.error("Error sending email:", err));
+                triggeredEmails.emailContact("UrKPsGW", "7456d013-de65-4e46-a73e-fbcbfeced4d3", { variables: Emailvariables })
+                    .then(() => console.log("Email Sent to Marwan"))
+                    .catch(err => console.error("Error sending email:", err));
+            }
 
         } catch (emailError) {
             console.error("Error sending email:", emailError, jsonBody);

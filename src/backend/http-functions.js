@@ -84,7 +84,7 @@ export async function post_sendLead(request) {
 
             //check if IG/FB are specified (especially for UAE)
             if (splitFormName[4] && (splitFormName[4].toLowerCase() === "ig" || splitFormName[4].toLowerCase() === "fb")) {
-                jsonBody["source"] += `${splitFormName[4].toUpperCase()}`;
+                jsonBody["source"] = `${splitFormName[4].toUpperCase()}`;
             }
         }
 

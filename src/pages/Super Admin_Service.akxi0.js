@@ -67,14 +67,23 @@ $w('#button6').onClick(() => {
     const dataset1 = $w("#dataset1");
     dataset1.getItems(0, dataset1.getTotalCount())
         .then((results) => {
-            let csvContent = "created,country,serviceCenter,fullName,vehicleName,enquiry,sns,email,areaPhoneNumber,contactEmail,prefDate,prefTime\n"; // CSV-Header Names
+            let csvContent = "\uFEFFcreated,country,serviceCenter,fullName,vehicleName,enquiry,sns,email,areaPhoneNumber,contactEmail,prefDate,prefTime\n"; // CSV-Header Names
 
             results.items.forEach(item => {
                 let row = `"${item.created}","${item.country}","${item.serviceCenter}","${item.fullName}","${item.vehicleName}","${item.enquiry}","${item.sns}","${item.email}","${item.areaPhoneNumber}","${item.contactEmail}","${item.prefDate}","${item.prefTime}"\n`;
                 csvContent += row;
             })
 
-            $w("#csvDownloader").setAttribute("csv-data", csvContent);
+            // filename prettify
+            const now = new Date();
+            const pad = (n) => n.toString().padStart(2, '0');
+            const yyyy = now.getFullYear();
+            const mm = pad(now.getMonth() + 1); // months are 0-indexed
+            const dd = pad(now.getDate());
+            const hh = pad(now.getHours());
+            const min = pad(now.getMinutes());
+            const fileName = `AfterSales-AllCountries-${yyyy}${mm}${dd}-${hh}${min}-leads.csv`;
+            $w("#htmlDownloader").postMessage({csvContent, fileName});
         }).catch(err => {
             console.error(err);
         });

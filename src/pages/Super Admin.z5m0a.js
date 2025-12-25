@@ -314,10 +314,12 @@ $w("#clearFiltersBtn").onClick((event) => {
     $w("#sortDateDrop").value = "Descending";
     $w("#filterCountryDrop").value = "All";
     $w("#dataset1").setSort(wixData.sort().descending("created"));
-    $w("#dataset1").setFilter(wixData.filter()).then(()=>{
-        $w("#dataset1").getItems(0, $w("#dataset1").getTotalCount()).then((results) => {
-            setupChartData(results);
-            setupSummaryTable(results);
-        });
-    });
+    filterDataset($w("#dataset1"), filterCountry, null, null, null, null).then((filteredRes) => {
+        filterDatesArr = null;
+        filterShowroom = null;
+        filterVehicle = null;
+        filterSource = null;
+        setupChartData(filteredRes);
+        setupSummaryTable(filteredRes);
+    })
 })

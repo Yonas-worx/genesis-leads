@@ -149,6 +149,8 @@ export function setupChartData(collectionData) {
     let numContactUsDateDict = {};
     let numInstaFaceDateDict = {};
     let numLinkedInDateDict = {};
+    let numSnapchatDateDict = {};
+    let numTikTokDateDict = {};
 
     // Seperate all leads sources by date
     collectionData.items.forEach(lead => {
@@ -165,7 +167,7 @@ export function setupChartData(collectionData) {
         numLeadsByDateDict[leadKey] = (numLeadsByDateDict[leadKey] || 0) + 1;
 
         // Ensure all keys exist in the other dictionaries
-        [numLeadsByDateDict, numRequestAQuoteDateDict, numBookATestDriveDateDict, numOfflineEventDateDict, numContactUsDateDict, numInstaFaceDateDict, numLinkedInDateDict]
+        [numLeadsByDateDict, numRequestAQuoteDateDict, numBookATestDriveDateDict, numOfflineEventDateDict, numContactUsDateDict, numInstaFaceDateDict, numLinkedInDateDict, numSnapchatDateDict, numTikTokDateDict]
             .forEach(dict => {
                 if (!(leadKey in dict)) {
                     dict[leadKey] = 0;
@@ -233,7 +235,27 @@ export function setupChartData(collectionData) {
                         numLinkedInDateDict[key] = 1;
                     }
                     break;
-                default:
+                case "Snapchat":
+                case "snapchat":
+                case "snapChat":
+                case "SnapChat":
+                    if (key in numSnapchatDateDict) {
+                        numSnapchatDateDict[key] += 1;
+                    } else {
+                        numSnapchatDateDict[key] = 1;
+                    }
+                    break;
+                case "TikTok":
+                case "tiktok":
+                case "tikTok":
+                case "Tiktok":
+                    if (key in numTikTokDateDict) {
+                        numTikTokDateDict[key] += 1;
+                    } else {
+                        numTikTokDateDict[key] = 1;
+                    }
+                    break;
+                default:    
                     break;
             }
         });
@@ -244,7 +266,7 @@ export function setupChartData(collectionData) {
     let numAllTotalList = [];
     Object.keys(numLeadsByDateDict).forEach(key => {
         const webTotalForKey = numRequestAQuoteDateDict[key] + numBookATestDriveDateDict[key] + numContactUsDateDict[key] + numOfflineEventDateDict[key];
-        const socialTotalForKey = numInstaFaceDateDict[key] + numLinkedInDateDict[key];
+        const socialTotalForKey = numInstaFaceDateDict[key] + numLinkedInDateDict[key] + numSnapchatDateDict[key] + numTikTokDateDict[key];
         const allTotalForKey = webTotalForKey + socialTotalForKey;
         numWebsiteTotalList.push(webTotalForKey);
         numSocialTotalList.push(socialTotalForKey);
@@ -362,6 +384,24 @@ export function setupChartData(collectionData) {
             data: Object.values(numLinkedInDateDict).slice().reverse(),
             backgroundColor: "rgba(0, 0, 0, 0.4)",
             borderColor: "rgba(0, 0, 0, 0.4)",
+            borderWidth: 0,
+            type: "bar",
+            datalabels: { display: false, }
+        },
+        {
+            label: "Snapchat",
+            data: Object.values(numSnapchatDateDict).slice().reverse(),
+            backgroundColor: "rgba(255, 215, 0, 0.6)",
+            borderColor: "rgba(255, 215, 0, 0.6)",
+            borderWidth: 0,
+            type: "bar",
+            datalabels: { display: false, }
+        },
+        {
+            label: "TikTok",
+            data: Object.values(numTikTokDateDict).slice().reverse(),
+            backgroundColor: "rgba(135, 206, 250, 0.6)",
+            borderColor: "rgba(135, 206, 250, 0.6)",
             borderWidth: 0,
             type: "bar",
             datalabels: { display: false, }

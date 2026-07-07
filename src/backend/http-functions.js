@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 // serverError -> 500
 // badRequest -> 400
 // created -> 201

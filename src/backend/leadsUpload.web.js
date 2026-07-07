@@ -291,18 +291,26 @@ function parseSocialFormName(formName) {
 
 
 
-// ------------------------------------------------ //
+/// ------------------------------------------------ //
 //   SOURCE NORMALIZER                              //
 // ------------------------------------------------ //
 function normalizeSource(raw) {
     if (!raw) return '';
     const r = raw.trim().toLowerCase();
-    if (r === 'ig')      return 'IG';
-    if (r === 'fb')      return 'FB';
-    if (r === 'tiktok')  return 'TikTok';
-    if (r === 'social')  return 'Social';
-    if (r === 'website') return 'Website';
-    return raw.trim();
+    switch (r) {
+        case 'ig':
+            return 'IG';
+        case 'fb':
+            return 'FB';
+        case 'tiktok':
+            return 'TikTok';
+        case 'social':
+            return 'Social';
+        case 'website':
+            return 'Website';
+        default:
+            return raw.trim();
+    }
 }
 
 // ------------------------------------------------ //
